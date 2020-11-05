@@ -11,22 +11,22 @@ public class MainActivity extends AppCompatActivity {
 
     // Buttons
 
-    private Button contactsBtn;
-    private Button settingsBtn;
-    private Button mapBtn;
-    private Button reportBtn;
+    private Button contactsButton;
+    private Button settingsButton;
+    private Button mapButton;
+    private Button reportButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initButtons();
+        initComponents();
     }
 
-    private void initButtons() {
-        contactsBtn = (Button) findViewById(R.id.contactsBtn);
-        contactsBtn.setOnClickListener(new View.OnClickListener() {
+    private void initComponents() {
+        contactsButton = (Button) findViewById(R.id.contactsButton);
+        contactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent contactsIntent = new Intent(view.getContext(),ContactsActivity.class);
@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        settingsBtn = (Button) findViewById(R.id.settingsBtn);
-        settingsBtn.setOnClickListener(new View.OnClickListener() {
+        settingsButton = (Button) findViewById(R.id.settingsButton);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent settingsIntent = new Intent(view.getContext(),SettingsActivity.class);
@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mapBtn = (Button) findViewById(R.id.mapBtn);
-        mapBtn.setOnClickListener(new View.OnClickListener() {
+        mapButton = (Button) findViewById(R.id.mapButton);
+        mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent mapIntent = new Intent(view.getContext(),MapActivity.class);
@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        reportBtn = (Button) findViewById(R.id.reportBtn);
-        reportBtn.setOnClickListener(new View.OnClickListener() {
+        reportButton = (Button) findViewById(R.id.reportButton);
+        reportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent reportIntent = new Intent(view.getContext(),ReportActivity.class);

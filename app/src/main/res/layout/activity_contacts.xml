@@ -4,35 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#CDF0A5"
+    android:background="@color/colorGreenBG"
     tools:context=".ContactsActivity">
 
-        <TextView
-            android:id="@+id/labetTW"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:fontFamily="@font/harabara"
-            android:gravity="center"
-            android:text="Contacts"
-            android:textAlignment="center"
-            android:textColor="#406616"
-            android:textSize="36sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/labelTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/harabara"
+        android:gravity="center"
+        android:text="Contacts"
+        android:textAlignment="center"
+        android:textColor="@color/colorGreenDark"
+        android:textSize="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:id="@+id/contactsScrollView"
         android:layout_width="0dp"
         android:layout_height="0dip"
-        android:layout_above="@id/test"
+        android:layout_above="@id/addContactButton"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:fillViewport="false"
-        app:layout_constraintBottom_toTopOf="@+id/test"
+        app:layout_constraintBottom_toTopOf="@+id/addContactButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labetTW"
+        app:layout_constraintTop_toBottomOf="@+id/labelTextView"
         app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
@@ -45,16 +47,16 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/test"
+        android:id="@+id/addContactButton"
         android:layout_width="182dp"
         android:layout_height="50dp"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorGreenLight"
+        android:fontFamily="@font/harabara"
         android:text="Add contact"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
-        android:backgroundTint="#6D9B3A"
-        android:fontFamily="@font/harabara"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

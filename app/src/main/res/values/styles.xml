@@ -8,4 +8,9 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorBlueLight</item>
+    </style>
+
+
 </resources>

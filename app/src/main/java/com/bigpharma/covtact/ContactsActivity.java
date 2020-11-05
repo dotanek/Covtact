@@ -1,14 +1,15 @@
 package com.bigpharma.covtact;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -18,21 +19,13 @@ public class ContactsActivity extends AppCompatActivity {
 
     private LinearLayout contactsContainer;
     private ScrollView contactsScrollView;
+    private Button addContactButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-
-        contactsScrollView = (ScrollView) findViewById(R.id.contactsScrollView);
-        contactsContainer = (LinearLayout) findViewById(R.id.contactsContainer);
-
-        contactsScrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                contactsScrollView.fullScroll(View.FOCUS_DOWN); // Scrolls down all the way to the bottom of the list.
-            }
-        });
+        initComponents();
 
         for (int i = 0; i < 30; i++) {
             LinearLayout entry = initEntry();
@@ -43,6 +36,27 @@ public class ContactsActivity extends AppCompatActivity {
             entry.addView(remove);
             contactsContainer.addView(entry);
         }
+    }
+
+    private void initComponents() {
+        contactsContainer = (LinearLayout) findViewById(R.id.contactsContainer);
+
+        contactsScrollView = (ScrollView) findViewById(R.id.contactsScrollView);
+        contactsScrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                contactsScrollView.fullScroll(View.FOCUS_DOWN); // Scrolls down all the way to the bottom of the list.
+            }
+        });
+
+        addContactButton = (Button) findViewById(R.id.addContactButton);
+        addContactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent addContactIntent = new Intent(view.getContext(),AddContactActivity.class);
+                view.getContext().startActivity(addContactIntent);
+            }
+        });
     }
 
     LinearLayout initEntry() {
@@ -65,7 +79,7 @@ public class ContactsActivity extends AppCompatActivity {
         name.setTypeface(Typeface.createFromAsset(getAssets(),
                 "font/harabara.ttf"));
         name.setGravity(Gravity.CENTER);
-        name.setBackgroundColor(Color.parseColor("#52A0B7"));
+        name.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGreenLight));
         name.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         name.setTextColor(Color.parseColor("#FFFFFF"));
         name.setTextSize(20);
@@ -74,13 +88,16 @@ public class ContactsActivity extends AppCompatActivity {
 
     Button initRemove() {
         Button remove =  new Button(getApplicationContext());
-        LinearLayout.LayoutParams paramsRemove = new LinearLayout.LayoutParams(0, 120, 2);
+        LinearLayout.LayoutParams paramsRemove = new LinearLayout.LayoutParams(
+                0, 120, 2.5f);
         paramsRemove.leftMargin = 10;
         remove.setLayoutParams(paramsRemove);
         remove.setTypeface(Typeface.createFromAsset(getAssets(),
                 "font/harabara.ttf"));
         remove.setGravity(Gravity.CENTER);
-        remove.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E36161")));
+        remove.setBackgroundTintList(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(getApplicationContext(), R.color.colorRedLight)));
         remove.setTextColor(Color.parseColor("#FFFFFF"));
         remove.setTextSize(15);
         remove.setText("Remove");
