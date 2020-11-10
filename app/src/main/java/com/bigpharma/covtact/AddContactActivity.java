@@ -2,9 +2,11 @@ package com.bigpharma.covtact;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Layout;
@@ -43,6 +45,7 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
     private EditText nameEditText;
     private EditText noteEditText;
     private Button dateButton;
+    private Button addButton;
     private Date date;
 
     private void initComponents() {
@@ -65,6 +68,21 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
 
         nameEditText = (EditText) findViewById(R.id.nameEditText);
         noteEditText = (EditText) findViewById(R.id.noteEditText);
+
+        addButton = (Button) findViewById(R.id.addButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ContactModel contactModel = new ContactModel(nameEditText.getText().toString(),
+                        date,
+                        noteEditText.getText().toString());
+
+                DatabaseHelper databaseHelper = new DatabaseHelper(AddContactActivity.this);
+                databaseHelper.addContact(contactModel);
+
+                finish();
+            }
+        });
     }
 
     @Override

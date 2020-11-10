@@ -8,12 +8,15 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity {
 
@@ -26,15 +29,32 @@ public class ContactsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
         initComponents();
+        renderContacts();
+    }
 
-        for (int i = 0; i < 30; i++) {
-            LinearLayout entry = initEntry();
-            TextView name = initName();
-            Button remove = initRemove();
-            name.setText("Anna Nowak" + i);
-            entry.addView(name);
-            entry.addView(remove);
-            contactsContainer.addView(entry);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        renderContacts();
+    }
+
+    private void renderContacts() {
+        contactsContainer.removeAllViews();
+        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        try {
+            List<ContactModel> contactModelList = databaseHelper.getContacts();
+            for (ContactModel contactModel : contactModelList) {
+                LinearLayout entry = initEntry();
+                TextView name = initName();
+                Button remove = initRemove();
+                name.setText(contactModel.getName());
+                entry.addView(name);
+                entry.addView(remove);
+                entry.setId(contactModel.getId());
+                contactsContainer.addView(entry);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
