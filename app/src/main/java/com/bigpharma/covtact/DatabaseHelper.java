@@ -40,6 +40,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    // Methods for ContactModel
+
     public boolean addContact(ContactModel contactModel) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -80,6 +82,18 @@ class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return contactModelList;
+    }
+
+    public boolean removeContact(int id) {
+        String queryString = "DELETE FROM " + CONTACT_TABLE + " WHERE " + CONTACT_COLUMN_ID +"="+ id;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        if (cursor.moveToFirst()) { // Returns false no matter the result, TODO find a way to check for success.
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

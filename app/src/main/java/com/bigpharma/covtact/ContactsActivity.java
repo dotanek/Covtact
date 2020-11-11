@@ -3,6 +3,7 @@ package com.bigpharma.covtact;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -23,6 +24,7 @@ public class ContactsActivity extends AppCompatActivity {
     private LinearLayout contactsContainer;
     private ScrollView contactsScrollView;
     private Button addContactButton;
+    Dialog detailsDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +47,8 @@ public class ContactsActivity extends AppCompatActivity {
             List<ContactModel> contactModelList = databaseHelper.getContacts();
             for (ContactModel contactModel : contactModelList) {
                 LinearLayout entry = initEntry();
-                TextView name = initName();
-                Button remove = initRemove();
-                name.setText(contactModel.getName());
+                TextView name = initName(contactModel.getName());
+                Button remove = initRemove(contactModel.getId());
                 entry.addView(name);
                 entry.addView(remove);
                 entry.setId(contactModel.getId());
@@ -77,6 +78,8 @@ public class ContactsActivity extends AppCompatActivity {
                 view.getContext().startActivity(addContactIntent);
             }
         });
+
+        detailsDialog = new Dialog(this);
     }
 
     LinearLayout initEntry() {
@@ -84,7 +87,7 @@ public class ContactsActivity extends AppCompatActivity {
         LinearLayout.LayoutParams paramsEntry = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
-        paramsEntry.bottomMargin = 20;
+        paramsEntry.bottomMargin = 10;
         entry.setLayoutParams(paramsEntry);
         entry.setGravity(Gravity.CENTER);
         entry.setWeightSum(10);
@@ -92,21 +95,32 @@ public class ContactsActivity extends AppCompatActivity {
         return entry;
     }
 
-    TextView initName() {
-        TextView name = new TextView(getApplicationContext());
-        LinearLayout.LayoutParams paramsName = new LinearLayout.LayoutParams(0, 100, 4);
+    TextView initName(String contactName) {
+        Button name = new Button(getApplicationContext());
+        LinearLayout.LayoutParams paramsName = new LinearLayout.LayoutParams(0, 120, 4);
         name.setLayoutParams(paramsName);
         name.setTypeface(Typeface.createFromAsset(getAssets(),
                 "font/harabara.ttf"));
         name.setGravity(Gravity.CENTER);
-        name.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGreenLight));
+        name.setBackgroundTintList(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(getApplicationContext(), R.color.colorGreenLight)));
         name.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         name.setTextColor(Color.parseColor("#FFFFFF"));
         name.setTextSize(20);
+        name.setText(contactName);
+
+        name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopup(view);
+            }
+        });
+
         return name;
     }
 
-    Button initRemove() {
+    Button initRemove(final int contactId) {
         Button remove =  new Button(getApplicationContext());
         LinearLayout.LayoutParams paramsRemove = new LinearLayout.LayoutParams(
                 0, 120, 2.5f);
@@ -121,6 +135,21 @@ public class ContactsActivity extends AppCompatActivity {
         remove.setTextColor(Color.parseColor("#FFFFFF"));
         remove.setTextSize(15);
         remove.setText("Remove");
+
+        remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseHelper databaseHelper = new DatabaseHelper(ContactsActivity.this);
+                boolean result = databaseHelper.removeContact(contactId);
+                renderContacts();
+            }
+        });
+
         return remove;
+    }
+
+    public void showPopup(View v) {
+        detailsDialog.setContentView(R.layout.contact_popup);
+        detailsDialog.show();
     }
 }
