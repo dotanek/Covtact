@@ -37,17 +37,23 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
-                android:id="@+id/imageView"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="330dp"
-                android:layout_height="303dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.167"
-                app:srcCompat="@android:color/holo_blue_dark"
-                app:tint="@color/colorGreenDark" />
+                android:layout_height="303dp">
+
+                <com.bigpharma.covtact.views.ViewMap
+                    android:id="@+id/mapView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                </com.bigpharma.covtact.views.ViewMap>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </ScrollView>
