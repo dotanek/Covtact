@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/rounded_edge"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_marginLeft="50dp"
+    android:layout_marginRight="50dp">
+
+    <TextView
+        android:lines="2"
+        android:id="@+id/nameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/harabara"
+        android:gravity="center"
+        android:text="Placeholder"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        app:autoSizeMaxTextSize="100sp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintStart_toStartOf="parent"></TextView>
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:fontFamily="@font/harabara"
+        android:gravity="center"
+        android:text="00/00/0000"
+        android:textColor="@android:color/white"
+        android:textSize="30dp"
+        app:layout_constraintStart_toStartOf="@id/nameTextView"></TextView>
+
+    <Button
+        android:id="@+id/removeButton"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/colorRedLight"
+        android:text="Remove"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="20dp"></Button>
+
+</LinearLayout>

@@ -73,7 +73,21 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContactModel contactModel = new ContactModel(nameEditText.getText().toString(),
+
+                String contactName = nameEditText.getText().toString();
+                String contactNote = noteEditText.getText().toString();
+
+                if (contactName.length() == 0) {
+                    nameEditText.requestFocus();
+                    return;
+                }
+
+                if (contactNote.length() == 0) {
+                    noteEditText.requestFocus();
+                    return;
+                }
+
+                ContactModel contactModel = new ContactModel(contactName,
                         date,
                         noteEditText.getText().toString());
 
