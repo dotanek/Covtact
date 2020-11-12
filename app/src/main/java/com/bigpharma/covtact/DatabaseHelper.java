@@ -5,8 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -140,6 +138,123 @@ class ContactModel {
                 "name='" + name + '\'' +
                 ", date=" + date +
                 ", note='" + note + '\'' +
+                '}';
+    }
+}
+class PathModel {
+    private int id;
+    private java.sql.Date startDate;
+    private java.sql.Date endDate;
+
+    public PathModel(java.sql.Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public java.sql.Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(java.sql.Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public java.sql.Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(java.sql.Date endDate) {
+        this.endDate = endDate;
+    }
+
+    @Override
+    public String toString() {
+        return "PathModel{" +
+                "id=" + id +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
+    }
+}
+class PathPointModel {
+    private int id;
+    private int pathPointIndex;
+    private int pathId;
+    private java.sql.Date date;
+    private double longtitude;
+    private double latitude;
+
+    public PathPointModel(java.sql.Date date, double longtitude, double latitude) {
+        this.date = date;
+        this.longtitude = longtitude;
+        this.latitude = latitude;
+        this.pathPointIndex = 0;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getPathPointIndex() {
+        return pathPointIndex;
+    }
+
+    public void setPathPointIndex(int pathPointIndex) {
+        this.pathPointIndex = pathPointIndex;
+    }
+
+    public int getPathId() {
+        return pathId;
+    }
+
+    public void setPathId(int pathId) {
+        this.pathId = pathId;
+    }
+
+    public java.sql.Date getDate() {
+        return date;
+    }
+
+    public void setDate(java.sql.Date date) {
+        this.date = date;
+    }
+
+    public double getLongtitude() {
+        return longtitude;
+    }
+
+    public void setLongtitude(double longtitude) {
+        this.longtitude = longtitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    @Override
+    public String toString() {
+        return "PathPointModel{" +
+                "id=" + id +
+                ", pathPointIndex=" + pathPointIndex +
+                ", pathId=" + pathId +
+                ", date=" + date +
+                ", longtitude=" + longtitude +
+                ", latitude=" + latitude +
                 '}';
     }
 }
