@@ -66,24 +66,18 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
             }
         });
 
-        nameEditText = (EditText) findViewById(R.id.nameEditText);
-        noteEditText = (EditText) findViewById(R.id.noteEditText);
+        nameEditText = findViewById(R.id.nameEditText);
+        noteEditText = findViewById(R.id.noteEditText);
 
-        addButton = (Button) findViewById(R.id.addButton);
+        addButton = findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String contactName = nameEditText.getText().toString();
-                String contactNote = noteEditText.getText().toString();
 
                 if (contactName.length() == 0) {
                     nameEditText.requestFocus();
-                    return;
-                }
-
-                if (contactNote.length() == 0) {
-                    noteEditText.requestFocus();
                     return;
                 }
 

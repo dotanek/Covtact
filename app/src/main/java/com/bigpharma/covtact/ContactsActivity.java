@@ -4,17 +4,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -103,7 +108,6 @@ public class ContactsActivity extends AppCompatActivity {
                 showPopup(view, contactModel);
             }
         });
-
         return entry;
     }
 
@@ -111,9 +115,19 @@ public class ContactsActivity extends AppCompatActivity {
         detailsDialog.setContentView(R.layout.contact_popup);
         detailsDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        TextView nameTextView = (TextView) detailsDialog.findViewById(R.id.nameTextView);
-        nameTextView.setText(contactModel.getName());
-        TextView dateTextView = (TextView) detailsDialog.findViewById(R.id.dateTextView);
+        final EditText nameEditText = detailsDialog.findViewById(R.id.nameEditText);
+        nameEditText.setText(contactModel.getName());
+
+        nameEditText.setOnTouchListener(new View.OnTouchListener() { // Doesn't fix selection in the middle of string. TODO make the cursor go to the end of string on touch.
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                nameEditText.onTouchEvent(motionEvent);
+                nameEditText.setSelection(nameEditText.getText().length());
+                return false;
+            }
+        });
+
+        TextView dateTextView = detailsDialog.findViewById(R.id.dateTextView);
         dateTextView.setText(contactModel.getDate().toString());
 
         Button removeButton = (Button) detailsDialog.findViewById(R.id.removeButton);

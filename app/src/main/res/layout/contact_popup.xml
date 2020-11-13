@@ -10,37 +10,55 @@
     android:layout_marginLeft="50dp"
     android:layout_marginRight="50dp">
 
-    <TextView
-        android:lines="2"
-        android:id="@+id/nameTextView"
+    <EditText
+        android:maxLines="1"
+        android:inputType="text"
+        android:id="@+id/nameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
         android:fontFamily="@font/harabara"
         android:gravity="center"
         android:text="Placeholder"
+        android:textSize="30dp"
         android:textAlignment="center"
         android:textColor="@android:color/white"
-        app:autoSizeMaxTextSize="100sp"
-        app:autoSizeMinTextSize="10sp"
-        app:autoSizeStepGranularity="1sp"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintStart_toStartOf="parent"></TextView>
+        android:backgroundTint="@android:color/white"
+        app:layout_constraintStart_toStartOf="parent"></EditText>
 
     <TextView
         android:id="@+id/dateTextView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
         android:layout_height="50dp"
         android:fontFamily="@font/harabara"
         android:gravity="center"
         android:text="00/00/0000"
         android:textColor="@android:color/white"
         android:textSize="30dp"
-        app:layout_constraintStart_toStartOf="@id/nameTextView"></TextView>
+        app:layout_constraintStart_toStartOf="@id/nameEditText"></TextView>
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="200dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/colorBlueLight"
+        android:text="Save"
+        android:enabled="false"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="20dp"></Button>
 
     <Button
         android:id="@+id/removeButton"
         android:layout_width="200dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
         android:backgroundTint="@color/colorRedLight"

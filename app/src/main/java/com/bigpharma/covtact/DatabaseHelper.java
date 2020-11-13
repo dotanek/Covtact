@@ -87,7 +87,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(queryString, null);
 
-        if (cursor.moveToFirst()) { // Returns false no matter the result, TODO find a way to check for success.
+        if (cursor.moveToFirst()) { // Returns false no matter the result, TODO find a way to check for success and failure.
             return true;
         } else {
             return false;
