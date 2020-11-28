@@ -23,16 +23,25 @@ interface LocationService {
 }
 
 public class LocationServiceListener implements LocationListener, LocationService {
-
+    private Location lastLocation;
     private List<LocationListener> listenerList;
 
     public LocationServiceListener() {
         listenerList = new ArrayList<LocationListener>();
+        lastLocation = null;
+    }
+
+    public LocationServiceListener(Location lastLocation) {
+        listenerList = new ArrayList<LocationListener>();
+        this.lastLocation = lastLocation;
     }
 
     public void addListener(LocationListener ll) {
         if(listenerList.contains(ll))
             return;
+        if(lastLocation != null) {
+            ll.onLocationChanged(lastLocation);
+        };
         listenerList.add(ll);
     }
 
@@ -43,6 +52,7 @@ public class LocationServiceListener implements LocationListener, LocationServic
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
+        lastLocation = location;
         for(LocationListener ll: listenerList) ll.onLocationChanged(location);
         Date date = DateTimeUtils.toSqlDate(ZonedDateTime.now(ZoneOffset.UTC).toLocalDate());
         PathPointModel pathPointModel = new PathPointModel(date,location.getLongitude(),location.getLatitude());
