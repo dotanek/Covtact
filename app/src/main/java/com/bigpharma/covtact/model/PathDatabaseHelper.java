@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
@@ -26,11 +28,11 @@ public class PathDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableStarement = String.format("CREATE TABLE %s (",DatabaseHelper.NAME_DB_FILE) +
+        String createTableStarement = String.format("CREATE TABLE %s (",TABLE) +
                 String.format("%s INTEGER PRIMARY KEY AUTOINCREMENT, ", COLUMN_ID) +
                 String.format("%s INTEGER,",COLUMN_DEVICE_OWNER) +
                 String.format("%s DATE,",COLUMN_START_DATE) +
-                String.format("%s DATE,",COLUMN_END_DATE) +
+                String.format("%s DATE",COLUMN_END_DATE) +
                 ")";
         db.execSQL(createTableStarement);
     }
@@ -40,7 +42,7 @@ public class PathDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public Pair<Boolean, PathModel> addPath(PathModel pathModel) {
+    public PathModel addPath(PathModel pathModel) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_DEVICE_OWNER,pathModel.isDeviceOwner() ? 1 : 0);
@@ -69,9 +71,47 @@ public class PathDatabaseHelper extends SQLiteOpenHelper {
             pathModelNew.setDeviceOwner(deviceOwner);
             pathModelNew.setStartDate(startDate);
             pathModelNew.setEndDate(endDate);
-            return  new Pair<Boolean, PathModel>(true,pathModelNew);
+            return pathModelNew;
         }
-        return new Pair<Boolean, PathModel>(false,null);
+        return null;
     }
 
+    public PathModel getLastestOwnedPath() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(TABLE);
+        queryBuilder.appendWhere(COLUMN_DEVICE_OWNER + " = ?");
+        String[] args = {"1"};
+        String queryString = queryBuilder.buildQuery(null,null,null,null,null,"1");
+        Cursor cursor = db.rawQuery(queryString,args);
+        if(cursor.moveToFirst()) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
+            int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+            boolean deviceOwner = (cursor.getInt(cursor.getColumnIndex(COLUMN_DEVICE_OWNER)) == 1);
+            String startDateStr = cursor.getString(cursor.getColumnIndex(COLUMN_START_DATE));
+            String endDateStr = cursor.getString(cursor.getColumnIndex(COLUMN_END_DATE));
+            Date startDate;
+            Date endDate;
+            try {
+                startDate = dateFormat.parse(startDateStr);
+                endDate = dateFormat.parse(endDateStr);
+                PathModel pathModelNew = new PathModel(startDate);
+                pathModelNew.setId(id);
+                pathModelNew.setDeviceOwner(deviceOwner);
+                pathModelNew.setStartDate(startDate);
+                pathModelNew.setEndDate(endDate);
+                return pathModelNew;
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public PathPointModel getLastPathPoint(PathModel pathModel) {
+        //TODO implement
+    }
+    public PathPointModel addPathPoint(PathModel pathModel, PathPointModel pathPointModel) {
+        //TODO implemnet
+    }
 }

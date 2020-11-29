@@ -67,9 +67,9 @@ public class BackgroundService extends Service {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            locationListener = new LocationServiceListener(lastLocation);
+            locationListener = new LocationServiceListener(this,lastLocation);
         } else {
-            locationListener = new LocationServiceListener();
+            locationListener = new LocationServiceListener(this);
         }
         for (String providerName : locationManager.getAllProviders()) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {

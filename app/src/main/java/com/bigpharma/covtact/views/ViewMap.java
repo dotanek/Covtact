@@ -40,6 +40,9 @@ public class ViewMap extends MapView implements LocationListener {
         org.osmdroid.config.Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         setTileSource(TileSourceFactory.MAPNIK);
         locationOverlay = new MyLocationNewOverlay(this);
+        Bitmap icon = BitmapFactory.decodeResource(applicationContext.getResources(),R.drawable.ex_person);
+        locationOverlay.setPersonIcon(icon);
+        //TODO: Set arrow icon
         this.getOverlays().add(locationOverlay);
         mapController = new MapController(this);
         mapController.setZoom(11);
@@ -51,7 +54,6 @@ public class ViewMap extends MapView implements LocationListener {
             mapController.setCenter(Util.GeoPointFromLocation(location));
             initialCentered = true;
         }
-        locationOverlay.setPersonIcon(BitmapFactory.decodeResource(applicationContext.getResources(),R.drawable.ex_person));
     }
 
     @Override

@@ -13,6 +13,9 @@ public class PathModel {
 
     public PathModel(Date startDate) {
         this.startDate = startDate;
+        this.endDate = startDate;
+        this.id = null;
+        this.deviceOwner = false;
     }
 
     @Nullable

@@ -1,49 +1,53 @@
 package com.bigpharma.covtact.model;
 
+import java.util.Date;
+
 public class PathPointModel {
-    private int id;
-    private int pathPointIndex;
-    private int pathId;
-    private java.sql.Date date;
+    private Integer id;
+    private Integer pathPointIndex;
+    private Integer pathId;
+    private Date date;
     private double longtitude;
     private double latitude;
 
-    public PathPointModel(java.sql.Date date, double longtitude, double latitude) {
+    public PathPointModel(Date date, double longtitude, double latitude) {
         this.date = date;
         this.longtitude = longtitude;
         this.latitude = latitude;
-        this.pathPointIndex = 0;
+        this.pathPointIndex = null;
+        this.pathId = null;
+        this.id = null;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getPathPointIndex() {
+    public Integer getPathPointIndex() {
         return pathPointIndex;
     }
 
-    public void setPathPointIndex(int pathPointIndex) {
+    public void setPathPointIndex(Integer pathPointIndex) {
         this.pathPointIndex = pathPointIndex;
     }
 
-    public int getPathId() {
+    public Integer getPathId() {
         return pathId;
     }
 
-    public void setPathId(int pathId) {
+    public void setPathId(Integer pathId) {
         this.pathId = pathId;
     }
 
-    public java.sql.Date getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(java.sql.Date date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
