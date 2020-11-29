@@ -10,6 +10,8 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
+import com.bigpharma.covtact.util.Util;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,9 +48,8 @@ public class PathDatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_DEVICE_OWNER,pathModel.isDeviceOwner() ? 1 : 0);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
-        cv.put(COLUMN_START_DATE,dateFormat.format(pathModel.getStartDate()));
-        cv.put(COLUMN_END_DATE,dateFormat.format(pathModel.getEndDate()));
+        cv.put(COLUMN_START_DATE, Util.dateToSqliteString(pathModel.getStartDate()));
+        cv.put(COLUMN_END_DATE,Util.dateToSqliteString(pathModel.getEndDate()));
         long insertedRow = db.insert(TABLE,null,cv);
 
         String queryString = String.format("SELECT * FROM %s ORDER BY %s DESC LIMIT 1",TABLE,COLUMN_ID);
@@ -61,8 +62,8 @@ public class PathDatabaseHelper extends SQLiteOpenHelper {
             Date startDate = pathModel.getStartDate();
             Date endDate = pathModel.getEndDate();
             try {
-                startDate = dateFormat.parse(startDateStr);
-                endDate = dateFormat.parse(endDateStr);
+                startDate = Util.sqliteStringToDate(startDateStr);
+                endDate = Util.sqliteStringToDate(endDateStr);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -85,7 +86,6 @@ public class PathDatabaseHelper extends SQLiteOpenHelper {
         String queryString = queryBuilder.buildQuery(null,null,null,null,null,"1");
         Cursor cursor = db.rawQuery(queryString,args);
         if(cursor.moveToFirst()) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
             int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
             boolean deviceOwner = (cursor.getInt(cursor.getColumnIndex(COLUMN_DEVICE_OWNER)) == 1);
             String startDateStr = cursor.getString(cursor.getColumnIndex(COLUMN_START_DATE));
@@ -93,8 +93,8 @@ public class PathDatabaseHelper extends SQLiteOpenHelper {
             Date startDate;
             Date endDate;
             try {
-                startDate = dateFormat.parse(startDateStr);
-                endDate = dateFormat.parse(endDateStr);
+                startDate = Util.sqliteStringToDate(startDateStr);
+                endDate = Util.sqliteStringToDate(endDateStr);
                 PathModel pathModelNew = new PathModel(startDate);
                 pathModelNew.setId(id);
                 pathModelNew.setDeviceOwner(deviceOwner);
@@ -110,8 +110,10 @@ public class PathDatabaseHelper extends SQLiteOpenHelper {
 
     public PathPointModel getLastPathPoint(PathModel pathModel) {
         //TODO implement
+        return null;
     }
     public PathPointModel addPathPoint(PathModel pathModel, PathPointModel pathPointModel) {
         //TODO implemnet
+        return null;
     }
 }
