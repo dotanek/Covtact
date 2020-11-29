@@ -7,13 +7,13 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.bigpharma.covtact.model.PathPointModel;
+
 import org.threeten.bp.DateTimeUtils;
-import org.threeten.bp.OffsetDateTime;
 import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.ZonedDateTime;
 
 import java.sql.Date;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
