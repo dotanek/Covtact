@@ -1,5 +1,7 @@
 package com.bigpharma.covtact.model;
 
+import android.location.Location;
+
 import java.util.Date;
 
 public class PathPointModel {
@@ -17,6 +19,30 @@ public class PathPointModel {
         this.pathPointIndex = null;
         this.pathId = null;
         this.id = null;
+    }
+    public PathPointModel(PathPointModel pathPointModel) {
+        this.id = pathPointModel.id;
+        this.pathPointIndex = pathPointModel.pathPointIndex;
+        this.pathId = pathPointModel.pathId;
+        this.date = pathPointModel.date;
+        this.longtitude = pathPointModel.longtitude;
+        this.latitude = pathPointModel.latitude;
+    }
+    public Location toLocation() {
+        Location a = new Location(this.id == null ? "NULL" : String.format("%d",this.id));
+        a.setLatitude(latitude);
+        a.setLongitude(longtitude);
+        return a;
+    }
+
+    /**
+     * Returns distance in meters between to points of path
+     *
+     * @param b the b
+     * @return the double
+     */
+    public double distanceTo(PathPointModel b) {
+        return this.toLocation().distanceTo(b.toLocation());
     }
 
     public Integer getId() {
