@@ -1,21 +1,21 @@
 package com.bigpharma.covtact;
 
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
-import org.threeten.bp.DateTimeUtils;
-import org.threeten.bp.OffsetDateTime;
-import org.threeten.bp.ZoneOffset;
-import org.threeten.bp.ZonedDateTime;
+import com.bigpharma.covtact.model.PathModel;
+import com.bigpharma.covtact.model.PathPointModel;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 interface LocationService {
     void addListener(LocationListener ll);
@@ -23,16 +23,89 @@ interface LocationService {
 }
 
 public class LocationServiceListener implements LocationListener, LocationService {
+    private final ReentrantLock registerPathPointLock = new ReentrantLock();
+    private PathModel lastestOwnedPath = null;
+    private PathPointModel lastestOwnedPathPoint = null;
+    private DatabaseHelper databaseHelper = null;
+    private PathDatabaseHelper pathDatabaseHelper = null;
+    private Context applicationContext;
+    private Location lastLocation;
+    private final List<LocationListener> listenerList;
 
-    private List<LocationListener> listenerList;
-
-    public LocationServiceListener() {
+    public LocationServiceListener(Context context) {
         listenerList = new ArrayList<LocationListener>();
+        lastLocation = null;
+        this.applicationContext = context;
+        this.initialize();
+    }
+
+    public LocationServiceListener(Context context,Location lastLocation) {
+        listenerList = new ArrayList<LocationListener>();
+        this.lastLocation = lastLocation;
+        this.applicationContext = context;
+        this.initialize();
+    }
+
+    private void initialize() {
+        databaseHelper = new DatabaseHelper(applicationContext);
+        pathDatabaseHelper = databaseHelper.getPathDatabaseHelper();
+        createPathOwnedIfNotExist();
+    }
+
+    private void createPathOwnedIfNotExist() {
+        registerPathPointLock.lock();
+
+        lastestOwnedPath = pathDatabaseHelper.getLastestOwnedPath();
+        Log.i("createPathOwnedIfNotExist",String.valueOf(lastestOwnedPath));
+        if(lastestOwnedPath == null) {
+            Date startDate = new Date();
+            PathModel newOwnedPath = new PathModel(startDate);
+            newOwnedPath.setEndDate(startDate);
+            newOwnedPath.setDeviceOwner(true);
+            lastestOwnedPath = pathDatabaseHelper.addPath(newOwnedPath);
+        }
+
+        registerPathPointLock.unlock();
+    }
+
+    private void registerPathPoint(Location location) {
+        Date date = new Date();
+        PathPointModel pathPointModel = new PathPointModel(date,location.getLongitude(),location.getLatitude());
+        if(lastestOwnedPath != null) {
+            //Log.i("registerPathPoint","lastestOwnedPath = "+String.valueOf(lastestOwnedPath));
+            String tag = String.format("%d %s",
+                    Thread.currentThread().getId(),
+                    Thread.currentThread().getName());
+            //Log.i("onLocationChanged",tag+" WAIT");
+
+            registerPathPointLock.lock();
+
+            if(lastestOwnedPathPoint == null) {
+                lastestOwnedPathPoint = pathDatabaseHelper.getLastPathPointInPath(lastestOwnedPath);
+            }
+            Pair<PathModel,PathPointModel> pair = new Pair<PathModel,PathPointModel>(null,null);
+            if(lastestOwnedPathPoint == null) {
+                pair = pathDatabaseHelper.addPathPointToPath(lastestOwnedPath,pathPointModel);
+            }
+            else if(lastestOwnedPathPoint.distanceTo(pathPointModel) > 0) {
+                pair = pathDatabaseHelper.addPathPointToPath(lastestOwnedPath,pathPointModel);
+            }
+            lastestOwnedPath = pathDatabaseHelper.getLastestOwnedPath();
+            lastestOwnedPathPoint = pathDatabaseHelper.getLastPathPointInPath(lastestOwnedPath);
+            registerPathPointLock.unlock();
+
+        } else {
+            Log.i("registerPathPoint","lastestOwnedPath = null");
+            createPathOwnedIfNotExist();
+        }
     }
 
     public void addListener(LocationListener ll) {
         if(listenerList.contains(ll))
             return;
+        if(lastLocation != null) {
+            ll.onLocationChanged(lastLocation);
+        };
         listenerList.add(ll);
     }
 
@@ -42,11 +115,16 @@ public class LocationServiceListener implements LocationListener, LocationServic
     }
 
     @Override
-    public void onLocationChanged(@NonNull Location location) {
+    public void onLocationChanged(@NonNull final Location location) {
+        lastLocation = location;
         for(LocationListener ll: listenerList) ll.onLocationChanged(location);
-        Date date = DateTimeUtils.toSqlDate(ZonedDateTime.now(ZoneOffset.UTC).toLocalDate());
-        PathPointModel pathPointModel = new PathPointModel(date,location.getLongitude(),location.getLatitude());
-        Log.i("onLocationChanged",pathPointModel.toString());
+        Thread t = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                registerPathPoint(location);
+            }
+        });
+        t.start();
     }
 
     @Override
