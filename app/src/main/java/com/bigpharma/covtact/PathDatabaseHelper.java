@@ -11,7 +11,9 @@ import com.bigpharma.covtact.model.PathModel;
 import com.bigpharma.covtact.model.PathPointModel;
 import com.bigpharma.covtact.util.Util;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class PathDatabaseHelper {
@@ -58,6 +60,22 @@ public class PathDatabaseHelper {
         return result;
     }
 
+    public boolean hasDeviceOwnerPathForDate(Date date) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(DatabaseHelper.PATH_TABLE);
+        queryBuilder.appendWhere(DatabaseHelper.PATH_COLUMN_DEVICE_OWNER + " = ?");
+        queryBuilder.appendWhere(DatabaseHelper.PATH_COLUMN_START_DATE + " <= ?");
+        queryBuilder.appendWhere(DatabaseHelper.PATH_COLUMN_END_DATE + " >= ?");
+        String[] args = {"1",Util.dateToSqliteString(date),Util.dateToSqliteString(date)};
+        String queryString = queryBuilder.buildQuery(null,null,null,null,null,"1");
+        Log.i("DB",queryString);
+        Cursor cursor = db.rawQuery(queryString,args);
+        int count = cursor.getCount();
+        cursor.close();
+        return count > 0;
+    }
+
     public PathModel updatePath(PathModel pathModel) {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         if(pathModel.getId() == null) {
@@ -73,7 +91,8 @@ public class PathDatabaseHelper {
         return getPathById(pathModelInDb.getId());
     }
 
-    public PathModel getLastestOwnedPath() {//TODO change name of function to getOwnedPathWithMaxId
+    public PathModel getOwnedPathWithMaxId() {
+        Log.i("DB","getOwnedPathWithMaxId");
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         String queryString = "SELECT * FROM "+ DatabaseHelper.PATH_TABLE +
                 " ORDER BY "+ DatabaseHelper.PATH_COLUMN_ID + " DESC LIMIT 1;";
@@ -145,7 +164,36 @@ public class PathDatabaseHelper {
         return null;
     }
 
-    public PathPointModel getLastPathPointInPath(PathModel pathModel) { //TODO change name of function to getPathPointInPathWithMaxId
+    public List<PathPointModel> getPathPointByPath(PathModel pathModel) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(DatabaseHelper.PATH_POINT_TABLE);
+        queryBuilder.appendWhere(DatabaseHelper.PATH_POINT_COLUMN_PATH_ID + " = ?");
+        String[] args = {String.format("%d",pathModel.getId())};
+        String queryString = queryBuilder.buildQuery(null,null,null,null,null,null);
+        Cursor cursor = db.rawQuery(queryString,args);
+        Log.i("pp", String.valueOf(cursor.getCount()));
+        List<PathPointModel> points = new ArrayList<PathPointModel>();
+        if(cursor.moveToFirst()) {
+            do {
+                Integer id = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_ID));
+                Integer pathPointIndex = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_PATH_POINT_INDEX));
+                Integer pathId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_PATH_ID));
+                String dateStr = cursor.getString(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_DATE));
+                Date date = Util.sqliteStringToDate(dateStr);
+                double longtitude = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_LONGTITUDE));
+                double latitude = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_LATITUDE));
+                PathPointModel pathModelNew = new PathPointModel(date,longtitude,latitude);
+                pathModelNew.setId(id);
+                pathModelNew.setPathPointIndex(pathPointIndex);
+                pathModelNew.setPathId(pathId);
+                points.add(pathModelNew);
+            } while (cursor.moveToNext());
+        }
+        return points;
+    }
+
+    public PathPointModel getPathPointInPathWithMaxId(PathModel pathModel) {
         if(pathModel.getId() == null) {
             return null;
         }
@@ -174,6 +222,7 @@ public class PathDatabaseHelper {
         }
         return null;
     }
+
     public Pair<PathModel,PathPointModel> addPathPointToPath(PathModel pathModel, PathPointModel pathPointModel) {
         if(pathModel.getId() == null) {
             Log.i("addPathPointToPath","pathMode.getId() == null");
@@ -184,7 +233,7 @@ public class PathDatabaseHelper {
             Log.i("addPathPointToPath","pathModelInDb == null");
             return new Pair<PathModel,PathPointModel>(null,null); // When path not exist in database
         }
-        PathPointModel prevPathPoint = getLastPathPointInPath(pathModelInDb);
+        PathPointModel prevPathPoint = getPathPointInPathWithMaxId(pathModelInDb);
 
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         int pathPointIndex = 1;

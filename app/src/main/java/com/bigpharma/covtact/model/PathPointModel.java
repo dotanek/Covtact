@@ -2,6 +2,8 @@ package com.bigpharma.covtact.model;
 
 import android.location.Location;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.util.Date;
 
 public class PathPointModel {
@@ -28,6 +30,11 @@ public class PathPointModel {
         this.longtitude = pathPointModel.longtitude;
         this.latitude = pathPointModel.latitude;
     }
+
+    public GeoPoint toGeoPoint() {
+        return new GeoPoint(this.latitude,this.longtitude);
+    }
+
     public Location toLocation() {
         Location a = new Location(this.id == null ? "NULL" : String.format("%d",this.id));
         a.setLatitude(latitude);
