@@ -30,15 +30,33 @@
 
     <TextView
         android:id="@+id/dateTextView"
-        android:layout_width="wrap_content"
+        android:lines="1"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_height="50dp"
-        android:fontFamily="@font/harabara"
         android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:fontFamily="@font/harabara"
         android:text="00/00/0000"
         android:textColor="@android:color/white"
-        android:textSize="30dp"
-        app:layout_constraintStart_toStartOf="@id/nameEditText"></TextView>
+        android:textSize="25dp"
+        app:layout_constraintStart_toStartOf="@id/dateButton"></TextView>
+
+    <EditText
+        android:id="@+id/noteEditText"
+        android:layout_width="170dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/harabara"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@android:color/white"
+        android:textSize="15dp"
+        android:hint="Note (optional)"
+        app:layout_constraintStart_toStartOf="@id/dateButton"></EditText>
 
     <Button
         android:id="@+id/saveButton"
@@ -47,12 +65,13 @@
         android:layout_marginRight="30dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:backgroundTint="@color/colorBlueLight"
+        android:backgroundTint="@color/colorBlueDisabled"
         android:text="Save"
         android:enabled="false"
         android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        android:textSize="20dp"></Button>
+        android:textColor="@color/colorDisabledText"
+        android:textSize="20dp"
+        ></Button>
 
     <Button
         android:id="@+id/removeButton"

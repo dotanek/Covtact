@@ -5,10 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.bigpharma.covtact.DataType.ContactDate;
 
 class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -77,6 +81,19 @@ class DatabaseHelper extends SQLiteOpenHelper {
         return success != -1;
     }
 
+    public boolean updateContact(ContactModel contactModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(CONTACT_COLUMN_NAME, contactModel.getName());
+        cv.put(CONTACT_COLUMN_DATE, contactModel.getDate().toString());
+        cv.put(CONTACT_COLUMN_NOTE, contactModel.getNote());
+
+        long success = db.update(CONTACT_TABLE,cv,"id=?",new String[]{Integer.toString(contactModel.getId())});
+
+        return success != -1;
+    }
+
     public List<ContactModel> getContacts() throws Exception {
         List<ContactModel> contactModelList = new ArrayList<ContactModel>();
 
@@ -91,9 +108,12 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 String contactDate = cursor.getString(2);
                 String contactNote = cursor.getString(3);
 
-                Date date = new Date();
+                ContactDate date = new ContactDate();
                 date.day = Integer.parseInt(contactDate.substring(0,2));
-                date.month = Integer.parseInt(contactDate.substring(3,5));
+                date.month = Integer.parseInt(contactDate.substring(3,5)) - 1;
+
+                Log.wtf("Date",date.toString());
+
                 date.year = Integer.parseInt(contactDate.substring(6,10));
 
                 contactModelList.add(new ContactModel(contactId,contactName,date,contactNote));
@@ -122,16 +142,16 @@ class DatabaseHelper extends SQLiteOpenHelper {
 class ContactModel {
     private int id;
     private String name;
-    private Date date;
+    private ContactDate date;
     private String note;
 
-    public ContactModel(String name, Date date, String note) {
+    public ContactModel(String name, ContactDate date, String note) {
         this.name = name;
         this.date = date;
         this.note = note;
     }
 
-    public ContactModel(int id, String name, Date date, String note) {
+    public ContactModel(int id, String name, ContactDate date, String note) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -154,11 +174,11 @@ class ContactModel {
         this.name = name;
     }
 
-    public Date getDate() {
+    public ContactDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(ContactDate date) {
         this.date = date;
     }
 

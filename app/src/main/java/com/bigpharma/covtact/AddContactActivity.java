@@ -18,27 +18,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.bigpharma.covtact.DataType.ContactDate;
+
 import java.util.Calendar;
-
-class Date {
-    public int day;
-    public int month;
-    public int year;
-
-    Date() {
-        Calendar cal = Calendar.getInstance();
-        day = cal.get(Calendar.DAY_OF_MONTH);
-        month = cal.get(Calendar.MONTH);
-        year = cal.get(Calendar.YEAR);
-    }
-
-    public String toString() {
-        String dateStr = ((day > 9) ? Integer.toString(day) : "0" + day);
-        dateStr += "/" + ((month+1 > 9) ? month+1 : "0" + month+1);
-        dateStr += "/" + year;
-        return dateStr;
-    }
-}
 
 public class AddContactActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -46,7 +28,7 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
     private EditText noteEditText;
     private Button dateButton;
     private Button addButton;
-    private Date date;
+    private ContactDate date;
 
     private void initComponents() {
         dateButton = (Button) findViewById(R.id.dateButton);
@@ -98,7 +80,8 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
 
-        date = new Date();
+        date = new ContactDate();
+
         initComponents();
     }
 
