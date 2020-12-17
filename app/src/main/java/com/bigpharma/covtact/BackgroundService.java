@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Build;
@@ -64,7 +65,12 @@ public class BackgroundService extends Service {
 
     private void initLocationListener() {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationServiceListener();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            locationListener = new LocationServiceListener(this,lastLocation);
+        } else {
+            locationListener = new LocationServiceListener(this);
+        }
         for (String providerName : locationManager.getAllProviders()) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 locationManager.requestLocationUpdates(providerName, 5000, 1, locationListener);

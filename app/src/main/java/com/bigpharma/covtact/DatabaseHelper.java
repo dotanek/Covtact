@@ -12,6 +12,22 @@ import java.util.List;
 
 class DatabaseHelper extends SQLiteOpenHelper {
 
+    public static final String NAME_DB_FILE = "covtact.db";
+    //PathModel
+    public static final String PATH_TABLE = "path";
+    public static final String PATH_COLUMN_ID = "id";
+    public static final String PATH_COLUMN_DEVICE_OWNER = "deviceOwner";
+    public static final String PATH_COLUMN_START_DATE = "startDate";
+    public static final String PATH_COLUMN_END_DATE = "endDate";
+    //PathPointModel
+    public static final String PATH_POINT_TABLE = "pathPoint";
+    public static final String PATH_POINT_COLUMN_ID = "id";
+    public static final String PATH_POINT_COLUMN_PATH_POINT_INDEX = "pathPointIndex";
+    public static final String PATH_POINT_COLUMN_PATH_ID = "pathId";
+    public static final String PATH_POINT_COLUMN_DATE = "date";
+    public static final String PATH_POINT_COLUMN_LONGTITUDE = "longtitude";
+    public static final String PATH_POINT_COLUMN_LATITUDE = "latitude";
+    //ContactModel
     public static final String CONTACT_TABLE = "contacts";
     public static final String CONTACT_COLUMN_ID = "id";
     public static final String CONTACT_COLUMN_NAME = "name";
@@ -19,7 +35,14 @@ class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CONTACT_COLUMN_NOTE = "note";
 
     public DatabaseHelper(@Nullable Context context) {
-        super(context, "covtact.db", null, 1);
+        super(context, NAME_DB_FILE, null, 1);
+        pathDatabaseHelper = new PathDatabaseHelper(this);
+    }
+
+    private PathDatabaseHelper pathDatabaseHelper;
+
+    public PathDatabaseHelper getPathDatabaseHelper() {
+        return pathDatabaseHelper;
     }
 
     @Override
@@ -31,11 +54,12 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 CONTACT_COLUMN_NOTE + " TEXT)";
 
         sqLiteDatabase.execSQL(createTableStatement);
+        pathDatabaseHelper.onCreate(sqLiteDatabase);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        pathDatabaseHelper.onUpgrade(sqLiteDatabase,i,i1);
     }
 
     // Methods for ContactModel
@@ -152,123 +176,6 @@ class ContactModel {
                 "name='" + name + '\'' +
                 ", date=" + date +
                 ", note='" + note + '\'' +
-                '}';
-    }
-}
-class PathModel {
-    private int id;
-    private java.sql.Date startDate;
-    private java.sql.Date endDate;
-
-    public PathModel(java.sql.Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public java.sql.Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(java.sql.Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public java.sql.Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(java.sql.Date endDate) {
-        this.endDate = endDate;
-    }
-
-    @Override
-    public String toString() {
-        return "PathModel{" +
-                "id=" + id +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                '}';
-    }
-}
-class PathPointModel {
-    private int id;
-    private int pathPointIndex;
-    private int pathId;
-    private java.sql.Date date;
-    private double longtitude;
-    private double latitude;
-
-    public PathPointModel(java.sql.Date date, double longtitude, double latitude) {
-        this.date = date;
-        this.longtitude = longtitude;
-        this.latitude = latitude;
-        this.pathPointIndex = 0;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getPathPointIndex() {
-        return pathPointIndex;
-    }
-
-    public void setPathPointIndex(int pathPointIndex) {
-        this.pathPointIndex = pathPointIndex;
-    }
-
-    public int getPathId() {
-        return pathId;
-    }
-
-    public void setPathId(int pathId) {
-        this.pathId = pathId;
-    }
-
-    public java.sql.Date getDate() {
-        return date;
-    }
-
-    public void setDate(java.sql.Date date) {
-        this.date = date;
-    }
-
-    public double getLongtitude() {
-        return longtitude;
-    }
-
-    public void setLongtitude(double longtitude) {
-        this.longtitude = longtitude;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    @Override
-    public String toString() {
-        return "PathPointModel{" +
-                "id=" + id +
-                ", pathPointIndex=" + pathPointIndex +
-                ", pathId=" + pathId +
-                ", date=" + date +
-                ", longtitude=" + longtitude +
-                ", latitude=" + latitude +
                 '}';
     }
 }
