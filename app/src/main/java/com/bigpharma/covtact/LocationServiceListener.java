@@ -28,6 +28,7 @@ public class LocationServiceListener implements LocationListener, LocationServic
     private PathPointModel lastestOwnedPathPoint = null;
     private DatabaseHelper databaseHelper = null;
     private PathDatabaseHelper pathDatabaseHelper = null;
+    private int pathPointCounter = 0;
     private Context applicationContext;
     private Location lastLocation;
     private final List<LocationListener> listenerList;
@@ -54,8 +55,7 @@ public class LocationServiceListener implements LocationListener, LocationServic
 
     private void createPathOwnedIfNotExist() {
         registerPathPointLock.lock();
-
-        lastestOwnedPath = pathDatabaseHelper.getLastestOwnedPath();
+        lastestOwnedPath = pathDatabaseHelper.getOwnedPathWithMaxId();
         Log.i("createPathOwnedIfNotExist",String.valueOf(lastestOwnedPath));
         if(lastestOwnedPath == null) {
             Date startDate = new Date();
@@ -63,6 +63,7 @@ public class LocationServiceListener implements LocationListener, LocationServic
             newOwnedPath.setEndDate(startDate);
             newOwnedPath.setDeviceOwner(true);
             lastestOwnedPath = pathDatabaseHelper.addPath(newOwnedPath);
+            pathPointCounter = 0;
         }
 
         registerPathPointLock.unlock();
@@ -71,17 +72,16 @@ public class LocationServiceListener implements LocationListener, LocationServic
     private void registerPathPoint(Location location) {
         Date date = new Date();
         PathPointModel pathPointModel = new PathPointModel(date,location.getLongitude(),location.getLatitude());
+
         if(lastestOwnedPath != null) {
-            //Log.i("registerPathPoint","lastestOwnedPath = "+String.valueOf(lastestOwnedPath));
             String tag = String.format("%d %s",
                     Thread.currentThread().getId(),
                     Thread.currentThread().getName());
-            //Log.i("onLocationChanged",tag+" WAIT");
 
             registerPathPointLock.lock();
 
             if(lastestOwnedPathPoint == null) {
-                lastestOwnedPathPoint = pathDatabaseHelper.getLastPathPointInPath(lastestOwnedPath);
+                lastestOwnedPathPoint = pathDatabaseHelper.getPathPointInPathWithMaxId(lastestOwnedPath);
             }
             Pair<PathModel,PathPointModel> pair = new Pair<PathModel,PathPointModel>(null,null);
             if(lastestOwnedPathPoint == null) {
@@ -90,8 +90,19 @@ public class LocationServiceListener implements LocationListener, LocationServic
             else if(lastestOwnedPathPoint.distanceTo(pathPointModel) > 0) {
                 pair = pathDatabaseHelper.addPathPointToPath(lastestOwnedPath,pathPointModel);
             }
-            lastestOwnedPath = pathDatabaseHelper.getLastestOwnedPath();
-            lastestOwnedPathPoint = pathDatabaseHelper.getLastPathPointInPath(lastestOwnedPath);
+            lastestOwnedPath = pathDatabaseHelper.getOwnedPathWithMaxId();
+            lastestOwnedPathPoint = pathDatabaseHelper.getPathPointInPathWithMaxId(lastestOwnedPath);
+
+            pathPointCounter += 1;
+            if(pathPointCounter > 100) {
+                Date startDate = new Date();
+                PathModel newOwnedPath = new PathModel(startDate);
+                newOwnedPath.setEndDate(startDate);
+                newOwnedPath.setDeviceOwner(true);
+                lastestOwnedPath = pathDatabaseHelper.addPath(newOwnedPath);
+                pathPointCounter = 0;
+            }
+
             registerPathPointLock.unlock();
 
         } else {

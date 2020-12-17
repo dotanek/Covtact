@@ -25,6 +25,7 @@ public class ViewMap extends MapView implements LocationListener {
     private boolean initialCentered = false;
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
+    private RouteOverlay routeOverlay;
     private Context applicationContext;
     public ViewMap(Context context) {
         super(context);
@@ -44,6 +45,10 @@ public class ViewMap extends MapView implements LocationListener {
         locationOverlay.setPersonIcon(icon);
         //TODO: Set arrow icon
         this.getOverlays().add(locationOverlay);
+
+        routeOverlay = new RouteOverlay(this);
+        this.getOverlays().add(routeOverlay);
+
         mapController = new MapController(this);
         mapController.setZoom(11);
     }
