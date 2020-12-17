@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -27,7 +28,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bigpharma.covtact.DataType.ContactDate;
+import com.bigpharma.covtact.util.Util;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity {
@@ -55,18 +59,10 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
     private void removeObsoleteContacts() {
-
-        /*ContactDate date = new ContactDate();
-
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
-        try {
-            List<ContactModel> contactModelList = databaseHelper.getContacts();
-            for (ContactModel contactModel : contactModelList) {
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -14);
+        databaseHelper.removeContactsBeforeDate(calendar.getTime());
     }
 
     private void renderContacts() {
@@ -210,7 +206,7 @@ public class ContactsActivity extends AppCompatActivity {
         });
 
         TextView dateTextView = detailsDialog.findViewById(R.id.dateTextView);
-        dateTextView.setText(contactModel.getDate().toString());
+        dateTextView.setText(Util.dateToDisplayString(contactModel.getDate()));
 
         Button removeButton = (Button) detailsDialog.findViewById(R.id.removeButton);
 

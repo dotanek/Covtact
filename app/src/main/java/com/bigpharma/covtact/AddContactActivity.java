@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import com.bigpharma.covtact.DataType.ContactDate;
+import com.bigpharma.covtact.util.Util;
 
 import java.util.Calendar;
 
@@ -28,11 +28,10 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
     private EditText noteEditText;
     private Button dateButton;
     private Button addButton;
-    private ContactDate date;
+    private Calendar calendar;
 
     private void initComponents() {
         dateButton = (Button) findViewById(R.id.dateButton);
-        dateButton.setText(date.toString());
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -40,13 +39,15 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
                         AddContactActivity.this,
                         R.style.DialogTheme,
                         AddContactActivity.this,
-                        date.year,
-                        date.month,
-                        date.day
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
                 );
                 dialog.show();
             }
         });
+
+        dateButton.setText(Util.dateToDisplayString(calendar.getTime()));
 
         nameEditText = findViewById(R.id.nameEditText);
         noteEditText = findViewById(R.id.noteEditText);
@@ -64,7 +65,7 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
                 }
 
                 ContactModel contactModel = new ContactModel(contactName,
-                        date,
+                        calendar.getTime(),
                         noteEditText.getText().toString());
 
                 DatabaseHelper databaseHelper = new DatabaseHelper(AddContactActivity.this);
@@ -79,18 +80,16 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
-
-        date = new ContactDate();
-
+        calendar = Calendar.getInstance();
         initComponents();
     }
 
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-        date.year = i;
-        date.month = i1;
-        date.day = i2;
-        dateButton.setText(date.toString());
+        calendar.set(Calendar.YEAR,i);
+        calendar.set(Calendar.MONTH,i1);
+        calendar.set(Calendar.DAY_OF_MONTH,i2);
+        dateButton.setText(Util.dateToDisplayString(calendar.getTime()));
     }
 
     @Override
