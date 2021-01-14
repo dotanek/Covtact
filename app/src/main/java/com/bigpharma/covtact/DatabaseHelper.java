@@ -14,10 +14,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.bigpharma.covtact.DataType.ContactDate;
 import com.bigpharma.covtact.util.Util;
 
-class DatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String NAME_DB_FILE = "covtact.db";
     //PathModel

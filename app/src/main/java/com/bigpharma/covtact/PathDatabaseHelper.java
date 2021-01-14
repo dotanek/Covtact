@@ -11,7 +11,9 @@ import com.bigpharma.covtact.model.PathModel;
 import com.bigpharma.covtact.model.PathPointModel;
 import com.bigpharma.covtact.util.Util;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class PathDatabaseHelper {
@@ -54,8 +56,24 @@ public class PathDatabaseHelper {
         if(rowid == -1) {
             return null;
         }
-        PathModel result = getPathById(rowid);
+        PathModel result = getPathById(rowid,false);
         return result;
+    }
+
+    public boolean hasDeviceOwnerPathForDate(Date date) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(DatabaseHelper.PATH_TABLE);
+        queryBuilder.appendWhere(DatabaseHelper.PATH_COLUMN_DEVICE_OWNER + " = ?");
+        queryBuilder.appendWhere(DatabaseHelper.PATH_COLUMN_START_DATE + " <= ?");
+        queryBuilder.appendWhere(DatabaseHelper.PATH_COLUMN_END_DATE + " >= ?");
+        String[] args = {"1",Util.dateToSqliteString(date),Util.dateToSqliteString(date)};
+        String queryString = queryBuilder.buildQuery(null,null,null,null,null,"1");
+        Log.i("DB",queryString);
+        Cursor cursor = db.rawQuery(queryString,args);
+        int count = cursor.getCount();
+        cursor.close();
+        return count > 0;
     }
 
     public PathModel updatePath(PathModel pathModel) {
@@ -63,17 +81,18 @@ public class PathDatabaseHelper {
         if(pathModel.getId() == null) {
             return null;
         }
-        PathModel pathModelInDb = getPathById(pathModel.getId());
+        PathModel pathModelInDb = getPathById(pathModel.getId(),false);
         pathModelInDb.setEndDate(pathModel.getEndDate());
         ContentValues cv = new ContentValues();
         cv.put(DatabaseHelper.PATH_COLUMN_DEVICE_OWNER,pathModelInDb.isDeviceOwner() ? 1 : 0);
         cv.put(DatabaseHelper.PATH_COLUMN_START_DATE, Util.dateToSqliteString(pathModelInDb.getStartDate()));
         cv.put(DatabaseHelper.PATH_COLUMN_END_DATE,Util.dateToSqliteString(pathModelInDb.getEndDate()));
         db.update(DatabaseHelper.PATH_TABLE,cv,"id == ?", new String[]{String.format("%d", pathModelInDb.getId())});
-        return getPathById(pathModelInDb.getId());
+        return getPathById(pathModelInDb.getId(),false);
     }
 
-    public PathModel getLastestOwnedPath() {//TODO change name of function to getOwnedPathWithMaxId
+    public PathModel getOwnedPathWithMaxId() {
+        Log.i("DB","getOwnedPathWithMaxId");
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         String queryString = "SELECT * FROM "+ DatabaseHelper.PATH_TABLE +
                 " ORDER BY "+ DatabaseHelper.PATH_COLUMN_ID + " DESC LIMIT 1;";
@@ -95,14 +114,25 @@ public class PathDatabaseHelper {
         return null;
     }
 
-    public PathModel getPathById(long index) {
+    public PathModel getPathById(long index,boolean onlyOwner) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(DatabaseHelper.PATH_TABLE);
         queryBuilder.appendWhere(DatabaseHelper.PATH_COLUMN_ID + " = ?");
-        String[] args = {String.format("%d",index)};
-        String queryString = queryBuilder.buildQuery(null,null,null,null,null,"1");
-        Cursor cursor = db.rawQuery(queryString,args);
+        String queryString = "";
+        Cursor cursor;
+        if(onlyOwner) {
+            queryBuilder.appendWhere(" AND "+DatabaseHelper.PATH_COLUMN_DEVICE_OWNER + " = ?");
+            String[] args = {String.format("%d",index),"1"};
+            queryString = queryBuilder.buildQuery(null,null,null,null,null,"1");
+            Log.i("xd",queryString);
+            cursor = db.rawQuery(queryString,args);
+        }else {
+            String[] args = {String.format("%d",index)};
+            queryString = queryBuilder.buildQuery(null,null,null,null,null,"1");
+            Log.i("xd",queryString);
+            cursor = db.rawQuery(queryString,args);
+        }
         if(cursor.moveToFirst()) {
             int id = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.PATH_COLUMN_ID));
             boolean deviceOwner = (cursor.getInt(cursor.getColumnIndex(DatabaseHelper.PATH_COLUMN_DEVICE_OWNER)) == 1);
@@ -145,11 +175,40 @@ public class PathDatabaseHelper {
         return null;
     }
 
-    public PathPointModel getLastPathPointInPath(PathModel pathModel) { //TODO change name of function to getPathPointInPathWithMaxId
+    public List<PathPointModel> getPathPointByPath(PathModel pathModel) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(DatabaseHelper.PATH_POINT_TABLE);
+        queryBuilder.appendWhere(DatabaseHelper.PATH_POINT_COLUMN_PATH_ID + " = ?");
+        String[] args = {String.format("%d",pathModel.getId())};
+        String queryString = queryBuilder.buildQuery(null,null,null,null,null,null);
+        Cursor cursor = db.rawQuery(queryString,args);
+        Log.i("pp", String.valueOf(cursor.getCount()));
+        List<PathPointModel> points = new ArrayList<PathPointModel>();
+        if(cursor.moveToFirst()) {
+            do {
+                Integer id = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_ID));
+                Integer pathPointIndex = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_PATH_POINT_INDEX));
+                Integer pathId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_PATH_ID));
+                String dateStr = cursor.getString(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_DATE));
+                Date date = Util.sqliteStringToDate(dateStr);
+                double longtitude = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_LONGTITUDE));
+                double latitude = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.PATH_POINT_COLUMN_LATITUDE));
+                PathPointModel pathModelNew = new PathPointModel(date,longtitude,latitude);
+                pathModelNew.setId(id);
+                pathModelNew.setPathPointIndex(pathPointIndex);
+                pathModelNew.setPathId(pathId);
+                points.add(pathModelNew);
+            } while (cursor.moveToNext());
+        }
+        return points;
+    }
+
+    public PathPointModel getPathPointInPathWithMaxId(PathModel pathModel) {
         if(pathModel.getId() == null) {
             return null;
         }
-        PathModel pathPointModelInDb = getPathById(pathModel.getId());
+        PathModel pathPointModelInDb = getPathById(pathModel.getId(),false);
         if(pathPointModelInDb.getId() == null) {
             return null; //When path not exist in database
         }
@@ -174,17 +233,18 @@ public class PathDatabaseHelper {
         }
         return null;
     }
+
     public Pair<PathModel,PathPointModel> addPathPointToPath(PathModel pathModel, PathPointModel pathPointModel) {
         if(pathModel.getId() == null) {
             Log.i("addPathPointToPath","pathMode.getId() == null");
             return new Pair<PathModel,PathPointModel>(null,null);
         }
-        PathModel pathModelInDb = getPathById(pathModel.getId());
+        PathModel pathModelInDb = getPathById(pathModel.getId(),false);
         if(pathModelInDb == null) {
             Log.i("addPathPointToPath","pathModelInDb == null");
             return new Pair<PathModel,PathPointModel>(null,null); // When path not exist in database
         }
-        PathPointModel prevPathPoint = getLastPathPointInPath(pathModelInDb);
+        PathPointModel prevPathPoint = getPathPointInPathWithMaxId(pathModelInDb);
 
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         int pathPointIndex = 1;

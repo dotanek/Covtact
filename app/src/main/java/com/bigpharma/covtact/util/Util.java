@@ -2,6 +2,7 @@ package com.bigpharma.covtact.util;
 
 import android.location.Location;
 
+import com.bigpharma.covtact.model.PathModel;
 import com.bigpharma.covtact.model.PathPointModel;
 
 import org.osmdroid.util.GeoPoint;
@@ -11,10 +12,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Util {
     private Util() {}
+
+    public static PathModel getLastElement(List<PathModel> list) {
+        int lastIndex = list.size()-1;
+        return  list.get(lastIndex);
+    }
     public static GeoPoint GeoPointFromLocation(Location location) {
         if(location.hasAltitude()) {
             return new GeoPoint(location.getLatitude(),location.getLongitude(),location.getAltitude());
