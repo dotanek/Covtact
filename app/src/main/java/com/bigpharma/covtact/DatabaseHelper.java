@@ -115,7 +115,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
             } while(cursor.moveToNext());
         } else {
-            throw(new Exception("Unable to read database."));
+            //throw(new Exception("Unable to read database.")); Happens also when there is no contacts.
         }
 
         db.close();
@@ -127,11 +127,11 @@ class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(queryString, null);
 
-        db.close();
-
         if (cursor.moveToFirst()) { // Returns false no matter the result, TODO find a way to check for success and failure.
+            db.close();
             return true;
         } else {
+            db.close();
             return false;
         }
     }
