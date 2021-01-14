@@ -5,16 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-
-import com.bigpharma.covtact.util.Util;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -75,23 +69,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
 
         cv.put(CONTACT_COLUMN_NAME, contactModel.getName());
-        cv.put(CONTACT_COLUMN_DATE, Util.dateToSqliteString(contactModel.getDate()));
+        cv.put(CONTACT_COLUMN_DATE, contactModel.getDate().toString());
         cv.put(CONTACT_COLUMN_NOTE, contactModel.getNote());
 
         long success = db.insert(CONTACT_TABLE,null,cv);
-
-        return success != -1;
-    }
-
-    public boolean updateContact(ContactModel contactModel) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-
-        cv.put(CONTACT_COLUMN_NAME, contactModel.getName());
-        cv.put(CONTACT_COLUMN_DATE, Util.dateToSqliteString(contactModel.getDate()));
-        cv.put(CONTACT_COLUMN_NOTE, contactModel.getNote());
-
-        long success = db.update(CONTACT_TABLE,cv,"id=?",new String[]{Integer.toString(contactModel.getId())});
 
         return success != -1;
     }
@@ -107,17 +88,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 int contactId = cursor.getInt(0);
                 String contactName = cursor.getString(1);
-                Date contactDate = Util.sqliteStringToDate(cursor.getString(2));
+                String contactDate = cursor.getString(2);
                 String contactNote = cursor.getString(3);
 
-                contactModelList.add(new ContactModel(contactId,contactName,contactDate,contactNote));
+                Date date = new Date();
+                date.day = Integer.parseInt(contactDate.substring(0,2));
+                date.month = Integer.parseInt(contactDate.substring(3,5));
+                date.year = Integer.parseInt(contactDate.substring(6,10));
+
+                contactModelList.add(new ContactModel(contactId,contactName,date,contactNote));
 
             } while(cursor.moveToNext());
         } else {
-            //throw(new Exception("Unable to read database.")); Happens also when there is no contacts.
+            throw(new Exception("Unable to read database."));
         }
 
-        db.close();
         return contactModelList;
     }
 
@@ -126,21 +111,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(queryString, null);
 
-        if (cursor.moveToFirst()) { // Returns false no matter the result, TODO find a way to check for success and failure.
-            db.close();
+        if (cursor.moveToFirst()) { // Returns false no matter the result, TODO find a way to check for success.
             return true;
         } else {
-            db.close();
             return false;
         }
-    }
-
-    public int removeContactsBeforeDate(Date date) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        int result = db.delete(CONTACT_TABLE,"Date(" + CONTACT_COLUMN_DATE + ")" + "< DATE(?)", new String[]{Util.dateToSqliteString(date)});
-        db.close();
-        return result;
     }
 }
 
