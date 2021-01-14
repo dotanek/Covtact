@@ -18,27 +18,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.bigpharma.covtact.util.Util;
+
 import java.util.Calendar;
-
-class Date {
-    public int day;
-    public int month;
-    public int year;
-
-    Date() {
-        Calendar cal = Calendar.getInstance();
-        day = cal.get(Calendar.DAY_OF_MONTH);
-        month = cal.get(Calendar.MONTH);
-        year = cal.get(Calendar.YEAR);
-    }
-
-    public String toString() {
-        String dateStr = ((day > 9) ? Integer.toString(day) : "0" + day);
-        dateStr += "/" + ((month+1 > 9) ? month+1 : "0" + month+1);
-        dateStr += "/" + year;
-        return dateStr;
-    }
-}
 
 public class AddContactActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -46,11 +28,10 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
     private EditText noteEditText;
     private Button dateButton;
     private Button addButton;
-    private Date date;
+    private Calendar calendar;
 
     private void initComponents() {
         dateButton = (Button) findViewById(R.id.dateButton);
-        dateButton.setText(date.toString());
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,37 +39,33 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
                         AddContactActivity.this,
                         R.style.DialogTheme,
                         AddContactActivity.this,
-                        date.year,
-                        date.month,
-                        date.day
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
                 );
                 dialog.show();
             }
         });
 
-        nameEditText = (EditText) findViewById(R.id.nameEditText);
-        noteEditText = (EditText) findViewById(R.id.noteEditText);
+        dateButton.setText(Util.dateToDisplayString(calendar.getTime()));
 
-        addButton = (Button) findViewById(R.id.addButton);
+        nameEditText = findViewById(R.id.nameEditText);
+        noteEditText = findViewById(R.id.noteEditText);
+
+        addButton = findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String contactName = nameEditText.getText().toString();
-                String contactNote = noteEditText.getText().toString();
 
                 if (contactName.length() == 0) {
                     nameEditText.requestFocus();
                     return;
                 }
 
-                if (contactNote.length() == 0) {
-                    noteEditText.requestFocus();
-                    return;
-                }
-
                 ContactModel contactModel = new ContactModel(contactName,
-                        date,
+                        calendar.getTime(),
                         noteEditText.getText().toString());
 
                 DatabaseHelper databaseHelper = new DatabaseHelper(AddContactActivity.this);
@@ -103,17 +80,16 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
-
-        date = new Date();
+        calendar = Calendar.getInstance();
         initComponents();
     }
 
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-        date.year = i;
-        date.month = i1;
-        date.day = i2;
-        dateButton.setText(date.toString());
+        calendar.set(Calendar.YEAR,i);
+        calendar.set(Calendar.MONTH,i1);
+        calendar.set(Calendar.DAY_OF_MONTH,i2);
+        dateButton.setText(Util.dateToDisplayString(calendar.getTime()));
     }
 
     @Override

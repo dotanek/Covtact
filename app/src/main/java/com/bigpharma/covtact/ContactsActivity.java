@@ -4,21 +4,34 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bigpharma.covtact.DataType.ContactDate;
+import com.bigpharma.covtact.util.Util;
+
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity {
@@ -33,6 +46,9 @@ public class ContactsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
         initComponents();
+
+        removeObsoleteContacts();
+
         renderContacts();
     }
 
@@ -40,6 +56,13 @@ public class ContactsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         renderContacts();
+    }
+
+    private void removeObsoleteContacts() {
+        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -14);
+        databaseHelper.removeContactsBeforeDate(calendar.getTime());
     }
 
     private void renderContacts() {
@@ -103,7 +126,6 @@ public class ContactsActivity extends AppCompatActivity {
                 showPopup(view, contactModel);
             }
         });
-
         return entry;
     }
 
@@ -111,10 +133,80 @@ public class ContactsActivity extends AppCompatActivity {
         detailsDialog.setContentView(R.layout.contact_popup);
         detailsDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        TextView nameTextView = (TextView) detailsDialog.findViewById(R.id.nameTextView);
-        nameTextView.setText(contactModel.getName());
-        TextView dateTextView = (TextView) detailsDialog.findViewById(R.id.dateTextView);
-        dateTextView.setText(contactModel.getDate().toString());
+        final EditText nameEditText = detailsDialog.findViewById(R.id.nameEditText);
+        nameEditText.setText(contactModel.getName());
+
+        final EditText noteEditText = detailsDialog.findViewById(R.id.noteEditText);
+        noteEditText.setText(contactModel.getNote());
+
+        final Button saveButton = detailsDialog.findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String contactName = nameEditText.getText().toString();
+
+                if (contactName.length() == 0) {
+                    nameEditText.requestFocus();
+                    return;
+                }
+
+                contactModel.setName(contactName);
+                contactModel.setNote(noteEditText.getText().toString());
+
+                DatabaseHelper databaseHelper = new DatabaseHelper(ContactsActivity.this);
+                databaseHelper.updateContact(contactModel);
+
+                detailsDialog.cancel();
+                ContactsActivity.this.onResume();
+            }
+        });
+
+        nameEditText.setOnTouchListener(new View.OnTouchListener() { // Doesn't fix selection in the middle of string. TODO make the cursor go to the end of string on touch.
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                nameEditText.onTouchEvent(motionEvent);
+                nameEditText.setSelection(nameEditText.getText().length());
+                return false;
+            }
+        });
+
+        nameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                saveButton.setEnabled(true);
+                saveButton.setBackgroundTintList(
+                        ColorStateList.valueOf(
+                                ContextCompat.getColor(getApplicationContext(), R.color.colorBlueLight)));
+                saveButton.setTextColor(Color.WHITE);
+            }
+        });
+
+        noteEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                saveButton.setEnabled(true);
+                saveButton.setBackgroundTintList(
+                        ColorStateList.valueOf(
+                                ContextCompat.getColor(getApplicationContext(), R.color.colorBlueLight)));
+                saveButton.setTextColor(Color.WHITE);
+            }
+        });
+
+        TextView dateTextView = detailsDialog.findViewById(R.id.dateTextView);
+        dateTextView.setText(Util.dateToDisplayString(contactModel.getDate()));
 
         Button removeButton = (Button) detailsDialog.findViewById(R.id.removeButton);
 
