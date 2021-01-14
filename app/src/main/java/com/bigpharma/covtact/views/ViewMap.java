@@ -41,8 +41,10 @@ public class ViewMap extends MapView implements LocationListener {
         org.osmdroid.config.Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         setTileSource(TileSourceFactory.MAPNIK);
         locationOverlay = new MyLocationNewOverlay(this);
-        Bitmap icon = BitmapFactory.decodeResource(applicationContext.getResources(),R.drawable.ex_person);
-        locationOverlay.setPersonIcon(icon);
+        Bitmap normalIcon = BitmapFactory.decodeResource(applicationContext.getResources(),R.drawable.ex_person);
+        Bitmap moveIcon = BitmapFactory.decodeResource(applicationContext.getResources(), R.drawable.ex_person_nav);
+        locationOverlay.setPersonIcon(normalIcon);
+        locationOverlay.setDirectionArrow(normalIcon,moveIcon);
         //TODO: Set arrow icon
         this.getOverlays().add(locationOverlay);
 
