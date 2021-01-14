@@ -5,12 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.security.Permission;
 import java.util.ArrayList;
@@ -27,12 +30,20 @@ public class MainActivity extends AppCompatActivity {
     private Button mapButton;
     private Button reportButton;
 
+    //tmp
+    private Button debug_logout;
+    //ogniobaza
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        startLocationService();
-        initComponents();
+        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+        }   else {
+            initComponents();
+            startLocationService();
+        }
     }
 
     private void startLocationService() {
@@ -103,5 +114,18 @@ public class MainActivity extends AppCompatActivity {
                 view.getContext().startActivity(reportIntent);
             }
         });
+
+
+
+        debug_logout = (Button) findViewById(R.id.debug_logout);
+        debug_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Intent loginIntent = new Intent(view.getContext(), LoginActivity.class);
+                view.getContext().startActivity(loginIntent);
+            }
+        });
+
     }
 }

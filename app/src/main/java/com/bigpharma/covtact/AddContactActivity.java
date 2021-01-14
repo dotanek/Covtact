@@ -2,15 +2,10 @@ package com.bigpharma.covtact;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,9 +13,27 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import com.bigpharma.covtact.util.Util;
-
 import java.util.Calendar;
+
+class Date {
+    public int day;
+    public int month;
+    public int year;
+
+    Date() {
+        Calendar cal = Calendar.getInstance();
+        day = cal.get(Calendar.DAY_OF_MONTH);
+        month = cal.get(Calendar.MONTH);
+        year = cal.get(Calendar.YEAR);
+    }
+
+    public String toString() {
+        String dateStr = ((day > 9) ? Integer.toString(day) : "0" + day);
+        dateStr += "/" + ((month+1 > 9) ? month+1 : "0" + month+1);
+        dateStr += "/" + year;
+        return dateStr;
+    }
+}
 
 public class AddContactActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -28,10 +41,11 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
     private EditText noteEditText;
     private Button dateButton;
     private Button addButton;
-    private Calendar calendar;
+    private Date date;
 
     private void initComponents() {
         dateButton = (Button) findViewById(R.id.dateButton);
+        dateButton.setText(date.toString());
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -39,33 +53,37 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
                         AddContactActivity.this,
                         R.style.DialogTheme,
                         AddContactActivity.this,
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
+                        date.year,
+                        date.month,
+                        date.day
                 );
                 dialog.show();
             }
         });
 
-        dateButton.setText(Util.dateToDisplayString(calendar.getTime()));
+        nameEditText = (EditText) findViewById(R.id.input_name);
+        noteEditText = (EditText) findViewById(R.id.input_password);
 
-        nameEditText = findViewById(R.id.nameEditText);
-        noteEditText = findViewById(R.id.noteEditText);
-
-        addButton = findViewById(R.id.addButton);
+        addButton = (Button) findViewById(R.id.logButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String contactName = nameEditText.getText().toString();
+                String contactNote = noteEditText.getText().toString();
 
                 if (contactName.length() == 0) {
                     nameEditText.requestFocus();
                     return;
                 }
 
+                if (contactNote.length() == 0) {
+                    noteEditText.requestFocus();
+                    return;
+                }
+
                 ContactModel contactModel = new ContactModel(contactName,
-                        calendar.getTime(),
+                        date,
                         noteEditText.getText().toString());
 
                 DatabaseHelper databaseHelper = new DatabaseHelper(AddContactActivity.this);
@@ -80,16 +98,17 @@ public class AddContactActivity extends AppCompatActivity implements DatePickerD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
-        calendar = Calendar.getInstance();
+
+        date = new Date();
         initComponents();
     }
 
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-        calendar.set(Calendar.YEAR,i);
-        calendar.set(Calendar.MONTH,i1);
-        calendar.set(Calendar.DAY_OF_MONTH,i2);
-        dateButton.setText(Util.dateToDisplayString(calendar.getTime()));
+        date.year = i;
+        date.month = i1;
+        date.day = i2;
+        dateButton.setText(date.toString());
     }
 
     @Override

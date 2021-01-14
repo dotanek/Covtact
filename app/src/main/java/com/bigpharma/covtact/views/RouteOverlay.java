@@ -7,7 +7,6 @@ import com.bigpharma.covtact.DatabaseHelper;
 import com.bigpharma.covtact.PathDatabaseHelper;
 import com.bigpharma.covtact.model.PathModel;
 import com.bigpharma.covtact.model.PathPointModel;
-import com.bigpharma.covtact.util.Util;
 
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -21,20 +20,11 @@ public class RouteOverlay extends Polyline {
         databaseHelper = new DatabaseHelper(mapView.getContext());
         pathDatabaseHelper = databaseHelper.getPathDatabaseHelper();
         List<GeoPoint> points = new ArrayList<>();
-        PathModel pathLastest  = pathDatabaseHelper.getOwnedPathWithMaxId();
-        ArrayList<PathModel> paths = new ArrayList<PathModel>();
-        paths.add(pathLastest);
-        PathModel tempPath = pathDatabaseHelper.getPathById(Util.getLastElement(paths).getId()-1,true);
-        while (tempPath != null) {
-            paths.add(tempPath);
-            tempPath = pathDatabaseHelper.getPathById(Util.getLastElement(paths).getId()-1,true);
-        }
-
-        for(int pIndex = paths.size()-1; pIndex>=0; pIndex--) {
-            List<PathPointModel> pathPoints = pathDatabaseHelper.getPathPointByPath(paths.get(pIndex));
-            for(int index = 0;index < pathPoints.size(); index++) {
-                points.add(pathPoints.get(index).toGeoPoint());
-            }
+        PathModel path  = pathDatabaseHelper.getOwnedPathWithMaxId();
+        List<PathPointModel> pathPoints = pathDatabaseHelper.getPathPointByPath(path);
+        for(int index = 0;index < pathPoints.size(); index++) {
+            points.add(pathPoints.get(index).toGeoPoint());
+            Log.i("xd",points.toString());
         }
         this.setPoints(points);
     }
