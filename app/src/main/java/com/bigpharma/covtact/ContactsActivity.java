@@ -4,34 +4,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.bigpharma.covtact.DataType.ContactDate;
+import com.bigpharma.covtact.database.ContactDatabaseHelper;
+import com.bigpharma.covtact.model.ContactModel;
 import com.bigpharma.covtact.util.Util;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity {
@@ -59,7 +53,7 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
     private void removeObsoleteContacts() {
-        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        ContactDatabaseHelper databaseHelper = new ContactDatabaseHelper(this);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -14);
         databaseHelper.removeContactsBeforeDate(calendar.getTime());
@@ -67,7 +61,7 @@ public class ContactsActivity extends AppCompatActivity {
 
     private void renderContacts() {
         contactsContainer.removeAllViews();
-        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        ContactDatabaseHelper databaseHelper = new ContactDatabaseHelper(this);
         try {
             List<ContactModel> contactModelList = databaseHelper.getContacts();
             for (ContactModel contactModel : contactModelList) {
@@ -154,7 +148,7 @@ public class ContactsActivity extends AppCompatActivity {
                 contactModel.setName(contactName);
                 contactModel.setNote(noteEditText.getText().toString());
 
-                DatabaseHelper databaseHelper = new DatabaseHelper(ContactsActivity.this);
+                ContactDatabaseHelper databaseHelper = new ContactDatabaseHelper(ContactsActivity.this);
                 databaseHelper.updateContact(contactModel);
 
                 detailsDialog.cancel();
@@ -213,7 +207,7 @@ public class ContactsActivity extends AppCompatActivity {
         removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatabaseHelper databaseHelper = new DatabaseHelper(ContactsActivity.this);
+                ContactDatabaseHelper databaseHelper = new ContactDatabaseHelper(ContactsActivity.this);
                 databaseHelper.removeContact(contactModel.getId());
                 detailsDialog.cancel();
                 ContactsActivity.this.onResume();

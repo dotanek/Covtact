@@ -9,6 +9,8 @@ import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
+import com.bigpharma.covtact.database.DatabaseHelper;
+import com.bigpharma.covtact.database.PathDatabaseHelper;
 import com.bigpharma.covtact.model.PathModel;
 import com.bigpharma.covtact.model.PathPointModel;
 

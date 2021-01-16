@@ -1,4 +1,4 @@
-package com.bigpharma.covtact;
+package com.bigpharma.covtact.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;

@@ -3,8 +3,8 @@ package com.bigpharma.covtact.views;
 
 import android.util.Log;
 
-import com.bigpharma.covtact.DatabaseHelper;
-import com.bigpharma.covtact.PathDatabaseHelper;
+import com.bigpharma.covtact.database.DatabaseHelper;
+import com.bigpharma.covtact.database.PathDatabaseHelper;
 import com.bigpharma.covtact.model.PathModel;
 import com.bigpharma.covtact.model.PathPointModel;
 
