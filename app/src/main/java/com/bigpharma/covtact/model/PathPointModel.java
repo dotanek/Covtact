@@ -2,6 +2,8 @@ package com.bigpharma.covtact.model;
 
 import android.location.Location;
 
+import com.bigpharma.covtact.util.Util;
+
 import org.osmdroid.util.GeoPoint;
 
 import java.util.Date;
@@ -13,6 +15,10 @@ public class PathPointModel {
     private Date date;
     private double longtitude;
     private double latitude;
+
+    private int getDateHHMM() {
+        return Util.dateToHHMMInteger(this.date);
+    }
 
     public PathPointModel(Date date, double longtitude, double latitude) {
         this.date = date;

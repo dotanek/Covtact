@@ -2,6 +2,8 @@ package com.bigpharma.covtact.model;
 
 import androidx.annotation.Nullable;
 
+import com.bigpharma.covtact.util.Util;
+
 import java.util.Date;
 
 public class PathModel {
@@ -10,6 +12,13 @@ public class PathModel {
     private boolean deviceOwner;
     private Date startDate;
     private Date endDate;
+
+    private int getStartDateHHMM() {
+        return Util.dateToHHMMInteger(this.startDate);
+    }
+    private int getEndDateHHMM() {
+        return Util.dateToHHMMInteger(this.endDate);
+    }
 
     public PathModel(Date startDate) {
         this.startDate = startDate;

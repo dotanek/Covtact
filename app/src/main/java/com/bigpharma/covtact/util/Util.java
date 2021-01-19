@@ -30,6 +30,10 @@ public class Util {
             return new GeoPoint(location.getLatitude(),location.getLongitude());
         }
     }
+    public static Integer dateToHHMMInteger(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("HHmm", Locale.ENGLISH);
+        return Integer.parseInt(dateFormat.format(date));
+    }
     public static String dateToSqliteString(Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
         return dateFormat.format(date);

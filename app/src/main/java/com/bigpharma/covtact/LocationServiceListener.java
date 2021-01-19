@@ -13,6 +13,7 @@ import com.bigpharma.covtact.database.DatabaseHelper;
 import com.bigpharma.covtact.database.PathDatabaseHelper;
 import com.bigpharma.covtact.model.PathModel;
 import com.bigpharma.covtact.model.PathPointModel;
+import com.bigpharma.covtact.util.Util;
 
 import java.util.Date;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class LocationServiceListener implements LocationListener, LocationServic
     private Context applicationContext;
     private Location lastLocation;
     private final List<LocationListener> listenerList;
+    private int lastDateHHMM = -1;
 
     public LocationServiceListener(Context context) {
         listenerList = new ArrayList<LocationListener>();
@@ -73,6 +75,11 @@ public class LocationServiceListener implements LocationListener, LocationServic
 
     private void registerPathPoint(Location location) {
         Date date = new Date();
+        int dateHHMM = Util.dateToHHMMInteger(date);
+        if(dateHHMM % 5 != 0 || dateHHMM == lastDateHHMM) {
+            return;
+        }
+        lastDateHHMM = dateHHMM;
         PathPointModel pathPointModel = new PathPointModel(date,location.getLongitude(),location.getLatitude());
 
         if(lastestOwnedPath != null) {
@@ -85,13 +92,8 @@ public class LocationServiceListener implements LocationListener, LocationServic
             if(lastestOwnedPathPoint == null) {
                 lastestOwnedPathPoint = pathDatabaseHelper.getPathPointInPathWithMaxId(lastestOwnedPath);
             }
-            Pair<PathModel,PathPointModel> pair = new Pair<PathModel,PathPointModel>(null,null);
-            if(lastestOwnedPathPoint == null) {
-                pair = pathDatabaseHelper.addPathPointToPath(lastestOwnedPath,pathPointModel);
-            }
-            else if(lastestOwnedPathPoint.distanceTo(pathPointModel) > 0) {
-                pair = pathDatabaseHelper.addPathPointToPath(lastestOwnedPath,pathPointModel);
-            }
+            //Pair<PathModel,PathPointModel> pair = new Pair<PathModel,PathPointModel>(null,null);
+            /*pair = */pathDatabaseHelper.addPathPointToPath(lastestOwnedPath,pathPointModel);
             lastestOwnedPath = pathDatabaseHelper.getOwnedPathWithMaxId();
             lastestOwnedPathPoint = pathDatabaseHelper.getPathPointInPathWithMaxId(lastestOwnedPath);
 
