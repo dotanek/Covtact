@@ -88,14 +88,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        settingsButton = (Button) findViewById(R.id.settingsButton);
+        /*settingsButton = (Button) findViewById(R.id.settingsButton);
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent settingsIntent = new Intent(view.getContext(),SettingsActivity.class);
                 view.getContext().startActivity(settingsIntent);
             }
-        });
+        });*/
 
         mapButton = (Button) findViewById(R.id.mapButton);
         mapButton.setOnClickListener(new View.OnClickListener() {
