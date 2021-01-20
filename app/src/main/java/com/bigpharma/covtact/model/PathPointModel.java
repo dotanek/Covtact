@@ -16,7 +16,7 @@ public class PathPointModel {
     private double longtitude;
     private double latitude;
 
-    private int getDateHHMM() {
+    public int getDateHHMM() {
         return Util.dateToHHMMInteger(this.date);
     }
 
