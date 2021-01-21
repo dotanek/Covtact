@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.bigpharma.covtact.firebase.FirestoreHelper;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.security.Permission;
@@ -34,13 +33,17 @@ public class MainActivity extends AppCompatActivity {
     //tmp
     private Button debug_logout;
     //ogniobaza
-    private FirestoreHelper hell;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+        }   else {
+            initComponents();
+            startLocationService();
+        }
     }
 
     private void startLocationService() {
