@@ -79,6 +79,11 @@ public class MapActivity extends AppCompatActivity {
         centerBtn.setOnClickListener((x) -> {
             this.mapView.centerMap();
         });
+
+        Button restartBtn = (Button) findViewById(R.id.restartBtn);
+        restartBtn.setOnClickListener((x) -> {
+            backgroundService.getLocationService().resetPath();
+        });
     }
 
     @Override

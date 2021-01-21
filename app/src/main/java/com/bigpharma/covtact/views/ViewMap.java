@@ -79,6 +79,9 @@ public class ViewMap extends MapView implements LocationListener {
         if(locationOverlay != null) {
             locationOverlay.setPosition(Util.GeoPointFromLocation(location));
         }
+        if(routeOverlay != null) {
+            routeOverlay.addPoint(location);
+        }
     }
 
     @Override

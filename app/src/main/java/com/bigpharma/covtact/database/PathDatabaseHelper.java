@@ -46,6 +46,14 @@ public class PathDatabaseHelper {
 
     }
 
+    public void resetAllPaths() {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        String deletePath = "DELETE FROM "+DatabaseHelper.PATH_TABLE+';';
+        String deletePathPoint = "DELETE FROM "+DatabaseHelper.PATH_POINT_TABLE+';';
+        db.execSQL(deletePathPoint);
+        db.execSQL(deletePath);
+    }
+
     public PathModel addPath(PathModel pathModel) {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();

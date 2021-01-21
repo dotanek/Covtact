@@ -23,19 +23,20 @@ import java.util.concurrent.locks.ReentrantLock;
 interface LocationService {
     void addListener(LocationListener ll);
     void removeListener(LocationListener ll);
+    void resetPath();
 }
 
 public class LocationServiceListener implements LocationListener, LocationService {
     private final ReentrantLock registerPathPointLock = new ReentrantLock();
+    private final Context applicationContext;
+    private final List<LocationListener> listenerList;
+    private Location lastLocation = null;
     private PathModel lastestOwnedPath = null;
     private PathPointModel lastestOwnedPathPoint = null;
-    private DatabaseHelper databaseHelper = null;
     private PathDatabaseHelper pathDatabaseHelper = null;
     private int pathPointCounter = 0;
-    private Context applicationContext;
-    private Location lastLocation;
-    private final List<LocationListener> listenerList;
     private int lastDateHHMM = -1;
+    private boolean disableRegistering = false;
 
     public LocationServiceListener(Context context) {
         listenerList = new ArrayList<LocationListener>();
@@ -52,7 +53,7 @@ public class LocationServiceListener implements LocationListener, LocationServic
     }
 
     private void initialize() {
-        databaseHelper = new DatabaseHelper(applicationContext);
+        DatabaseHelper databaseHelper = new DatabaseHelper(applicationContext);
         pathDatabaseHelper = databaseHelper.getPathDatabaseHelper();
         createPathOwnedIfNotExist();
     }
@@ -128,6 +129,19 @@ public class LocationServiceListener implements LocationListener, LocationServic
             listenerList.remove(ll);
     }
 
+    public void resetPath() {
+        disableRegistering = true;
+        registerPathPointLock.lock();
+        pathDatabaseHelper.resetAllPaths();
+        lastestOwnedPath = null;
+        lastestOwnedPathPoint = null;
+        pathPointCounter = 0;
+        lastDateHHMM = -1;
+        createPathOwnedIfNotExist();
+        registerPathPointLock.unlock();
+        disableRegistering = false;
+    }
+
     @Override
     public void onLocationChanged(@NonNull final Location location) {
         lastLocation = location;
@@ -135,7 +149,9 @@ public class LocationServiceListener implements LocationListener, LocationServic
         Thread t = new Thread(new Runnable(){
             @Override
             public void run() {
-                registerPathPoint(location);
+                if(!disableRegistering) {
+                    registerPathPoint(location);
+                }
             }
         });
         t.start();
