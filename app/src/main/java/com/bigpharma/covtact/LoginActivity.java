@@ -21,7 +21,6 @@ public class LoginActivity extends AppCompatActivity {
 
     Button logButton;
     EditText input_email, input_password;
-    TextView label_register;
     private FirebaseAuth mAuth;
 
     @Override
@@ -65,8 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
-                Intent mainIntent = new Intent(view.getContext(), MainActivity.class);
-                view.getContext().startActivity(mainIntent);
+
             }
         });
     }
