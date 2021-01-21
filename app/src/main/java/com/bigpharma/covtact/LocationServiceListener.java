@@ -92,8 +92,7 @@ public class LocationServiceListener implements LocationListener, LocationServic
             if(lastestOwnedPathPoint == null) {
                 lastestOwnedPathPoint = pathDatabaseHelper.getPathPointInPathWithMaxId(lastestOwnedPath);
             }
-            //Pair<PathModel,PathPointModel> pair = new Pair<PathModel,PathPointModel>(null,null);
-            /*pair = */pathDatabaseHelper.addPathPointToPath(lastestOwnedPath,pathPointModel);
+            pathDatabaseHelper.addPathPointToPath(lastestOwnedPath,pathPointModel);
             lastestOwnedPath = pathDatabaseHelper.getOwnedPathWithMaxId();
             lastestOwnedPathPoint = pathDatabaseHelper.getPathPointInPathWithMaxId(lastestOwnedPath);
 
