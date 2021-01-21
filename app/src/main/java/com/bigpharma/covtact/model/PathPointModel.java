@@ -7,6 +7,8 @@ import com.bigpharma.covtact.util.Util;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PathPointModel {
     private Integer id;
@@ -19,6 +21,8 @@ public class PathPointModel {
     public int getDateHHMM() {
         return Util.dateToHHMMInteger(this.date);
     }
+
+    public PathPointModel(){}
 
     public PathPointModel(Date date, double longtitude, double latitude) {
         this.date = date;
@@ -104,6 +108,14 @@ public class PathPointModel {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> docData = new HashMap<>();
+        docData.put("date", date);
+        docData.put("longtitude", longtitude);
+        docData.put("latitude", latitude);
+        return docData;
     }
 
     @Override
