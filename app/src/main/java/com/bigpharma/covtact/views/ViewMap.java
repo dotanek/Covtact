@@ -49,6 +49,7 @@ public class ViewMap extends MapView implements LocationListener {
         this.getOverlays().add(locationOverlay);
 
         routeOverlay = new RouteOverlay(this);
+        routeOverlay.setTheme(RouteOverlay.Theme.Red);
         this.getOverlays().add(routeOverlay);
 
         mapController = new MapController(this);
