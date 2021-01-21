@@ -7,40 +7,24 @@
     android:background="@color/colorGreenBG"
     tools:context=".MapActivity">
 
-    <TextView
-        android:id="@+id/labelTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:fontFamily="@font/harabara"
-        android:gravity="center"
-        android:text="Map"
-        android:textAlignment="center"
-        android:textColor="@color/colorGreenDark"
-        android:textSize="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelTextView">
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mapLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="120dp"
+            android:background="@drawable/map_border">
 
             <com.bigpharma.covtact.views.ViewMap
                 android:id="@+id/mapView"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -50,7 +34,46 @@
 
             </com.bigpharma.covtact.views.ViewMap>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mapLayout"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="10"
+        app:layout_constraintTop_toBottomOf="@+id/mapLayout"
+        tools:layout_editor_absoluteX="32dp">
+
+        <Button
+            android:id="@+id/centerBtn"
+            android:layout_width="50dp"
+            android:layout_height="70dp"
+            android:layout_below="@id/imageView"
+            android:layout_weight="3"
+            android:backgroundTint="@color/colorGreenLight"
+            android:fontFamily="@font/harabara"
+            android:text="Center"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:layout_marginRight="10dp"/>
+
+        <Button
+            android:id="@+id/restartBtn"
+            android:layout_width="50dp"
+            android:layout_height="70dp"
+            android:layout_below="@id/imageView"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="3"
+            android:backgroundTint="@color/colorRedLight"
+            android:fontFamily="@font/harabara"
+            android:text="Reset path"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp" />
 
     </LinearLayout>
 

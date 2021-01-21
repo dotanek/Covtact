@@ -22,11 +22,13 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 public class ViewMap extends MapView implements LocationListener {
 
-    private boolean initialCentered = false;
+    private boolean needCenter = true;
     private IMapController mapController;
-    private MyLocationNewOverlay locationOverlay;
+    private LocationOverlay locationOverlay;
     private RouteOverlay routeOverlay;
     private Context applicationContext;
+    private Location lastLocation;
+
     public ViewMap(Context context) {
         super(context);
         applicationContext = context;
@@ -40,26 +42,45 @@ public class ViewMap extends MapView implements LocationListener {
     private void init() {
         org.osmdroid.config.Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         setTileSource(TileSourceFactory.MAPNIK);
-        locationOverlay = new MyLocationNewOverlay(this);
-        Bitmap normalIcon = BitmapFactory.decodeResource(applicationContext.getResources(),R.drawable.ex_person);
-        Bitmap moveIcon = BitmapFactory.decodeResource(applicationContext.getResources(), R.drawable.ex_person_nav);
-        locationOverlay.setPersonIcon(normalIcon);
-        locationOverlay.setDirectionArrow(normalIcon,moveIcon);
+        //locationOverlay = new MyLocationNewOverlay(this);
+        //Bitmap normalIcon = BitmapFactory.decodeResource(applicationContext.getResources(),R.drawable.ex_person);
+        //Bitmap moveIcon = BitmapFactory.decodeResource(applicationContext.getResources(), R.drawable.ex_person_nav);
+        //locationOverlay.setPersonIcon(normalIcon);
+        //locationOverlay.setDirectionArrow(normalIcon,moveIcon);
         //TODO: Set arrow icon
-        this.getOverlays().add(locationOverlay);
+        //this.getOverlays().add(locationOverlay);
 
         routeOverlay = new RouteOverlay(this);
+        routeOverlay.setTheme(RouteOverlay.Theme.Red);
         this.getOverlays().add(routeOverlay);
 
         mapController = new MapController(this);
         mapController.setZoom(11);
+
+        locationOverlay = new LocationOverlay(this);
+        this.getOverlays().add(locationOverlay);
+    }
+
+    public void centerMap() {
+        if(lastLocation != null) {
+            mapController.setCenter(Util.GeoPointFromLocation(lastLocation));
+        } else {
+            needCenter = true;
+        }
     }
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        if(!initialCentered) {
+        this.lastLocation = location;
+        if(needCenter) {
             mapController.setCenter(Util.GeoPointFromLocation(location));
-            initialCentered = true;
+            needCenter = false;
+        }
+        if(locationOverlay != null) {
+            locationOverlay.setPosition(Util.GeoPointFromLocation(location));
+        }
+        if(routeOverlay != null) {
+            routeOverlay.addPoint(location);
         }
     }
 
