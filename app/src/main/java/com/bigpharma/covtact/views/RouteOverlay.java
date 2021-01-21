@@ -42,12 +42,17 @@ public class RouteOverlay extends FolderOverlay {
         this.polylineLayer = new RouteOverlayPolylineLayer(mapView);
         this.add(this.polylineLayer);
         this.add(this.markerLayer);
-        this.polylineLayer.setPoints(this.points);
-        this.markerLayer.setPoints(this.points);
+        this.setPoints(points);
         this.setTheme(Theme.Blue);
     }
     void setTheme(Theme theme) {
         this.markerLayer.setTheme(theme);
         this.polylineLayer.setTheme(theme);
+        mapView.postInvalidate();
+    }
+    public void setPoints(List<GeoPoint> points) {
+        this.polylineLayer.setPoints(this.points);
+        this.markerLayer.setPoints(this.points);
+        mapView.postInvalidate();
     }
 }

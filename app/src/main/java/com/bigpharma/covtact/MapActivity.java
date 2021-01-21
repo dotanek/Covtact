@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,6 +74,11 @@ public class MapActivity extends AppCompatActivity {
         });;
         mapView = (ViewMap) findViewById(R.id.mapView);
         connectBackgroundService();
+
+        Button centerBtn = (Button) findViewById(R.id.centerBtn);
+        centerBtn.setOnClickListener((x) -> {
+            this.mapView.centerMap();
+        });
     }
 
     @Override

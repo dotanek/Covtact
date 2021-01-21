@@ -15,8 +15,6 @@ import org.osmdroid.views.overlay.Marker;
 
 public class RouteOverlayMarker extends Marker {
     private MapView mapView;
-    private DatabaseHelper databaseHelper = null;
-    private PathDatabaseHelper pathDatabaseHelper = null;
 
     public RouteOverlayMarker(MapView mapView) {
         super(mapView);
