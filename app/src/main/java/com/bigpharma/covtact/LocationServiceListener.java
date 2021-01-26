@@ -28,6 +28,7 @@ interface LocationService {
 
 public class LocationServiceListener implements LocationListener, LocationService {
     private final ReentrantLock registerPathPointLock = new ReentrantLock();
+    private final ReentrantLock newLocationLock = new ReentrantLock();
     private final Context applicationContext;
     private final List<LocationListener> listenerList;
     private Location lastLocation = null;
@@ -73,11 +74,18 @@ public class LocationServiceListener implements LocationListener, LocationServic
 
         registerPathPointLock.unlock();
     }
-
+    public static boolean canRegisterPointAtTime(Date date, int lastDateHHMM) {
+        int dateHHMM = Util.dateToHHMMInteger(date);
+        //if(dateHHMM % 5 != 0 || dateHHMM == lastDateHHMM) {
+        if(dateHHMM == lastDateHHMM) {
+            return false;
+        }
+        return true;
+    }
     private void registerPathPoint(Location location) {
         Date date = new Date();
         int dateHHMM = Util.dateToHHMMInteger(date);
-        if(dateHHMM % 5 != 0 || dateHHMM == lastDateHHMM) {
+        if(!canRegisterPointAtTime(date,lastDateHHMM)) {
             return;
         }
         lastDateHHMM = dateHHMM;
@@ -114,6 +122,29 @@ public class LocationServiceListener implements LocationListener, LocationServic
             createPathOwnedIfNotExist();
         }
     }
+    private int locationInvalidErrorCount = 0;
+    private boolean locationIsValid(Location location) {
+        if(lastLocation == null) {
+            return true;
+        }
+        Float distanceMeters = lastLocation.distanceTo(location);
+        if(distanceMeters < 1) {
+            locationInvalidErrorCount = 0;
+            return true;
+        }
+        Float timeSeconds = (location.getTime()-lastLocation.getTime())/1000.0f;
+        Log.i("LocationService","Distance: "+distanceMeters.toString()+"m, Time: "+timeSeconds.toString()+"s");
+        float speedMeterSecond = distanceMeters/timeSeconds;
+        Float speedKMH = 3.6f*speedMeterSecond;
+        Log.i("LocationService","New location speed: "+speedKMH.toString());
+        final int maxSpeedKMH = 200;
+        if(speedKMH > maxSpeedKMH && locationInvalidErrorCount < 10) {
+            locationInvalidErrorCount += 1;
+            return  false;
+        }
+        locationInvalidErrorCount = 0;
+        return true;
+    }
 
     public void addListener(LocationListener ll) {
         if(listenerList.contains(ll))
@@ -144,6 +175,14 @@ public class LocationServiceListener implements LocationListener, LocationServic
 
     @Override
     public void onLocationChanged(@NonNull final Location location) {
+        if(newLocationLock.isLocked()) {
+            Log.i("LocationService","Skip location");
+            return;
+        }
+        newLocationLock.lock();
+        if(!locationIsValid(location)) {
+            return;
+        }
         lastLocation = location;
         for(LocationListener ll: listenerList) ll.onLocationChanged(location);
         Thread t = new Thread(new Runnable(){
@@ -155,6 +194,7 @@ public class LocationServiceListener implements LocationListener, LocationServic
             }
         });
         t.start();
+        newLocationLock.unlock();
     }
 
     @Override

@@ -9,6 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.bigpharma.covtact.LocationServiceListener;
 import com.bigpharma.covtact.database.DatabaseHelper;
 import com.bigpharma.covtact.database.PathDatabaseHelper;
 import com.bigpharma.covtact.model.PathModel;
@@ -25,8 +26,10 @@ public class RouteOverlay extends FolderOverlay {
     int lastHHMM = -1;
     public void addPoint(@NonNull Location location) {
         Date x = new Date();
+
+
         int time = Util.dateToHHMMInteger(x);
-        if(time != lastHHMM && time % 5 == 0 && points != null) {
+        if(LocationServiceListener.canRegisterPointAtTime(x,lastHHMM) && points != null) {
             lastHHMM = time;
             points.add(Util.GeoPointFromLocation(location));
             this.setPoints(this.points);
