@@ -71,7 +71,7 @@
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/colorRedLight"
             android:fontFamily="@font/harabara"
-            android:text="Report&#10;diganosis"
+            android:text="VirusPaths"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="24sp" />

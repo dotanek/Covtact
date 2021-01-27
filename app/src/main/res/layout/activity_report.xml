@@ -19,4 +19,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <Button
+        android:id="@+id/checkButton"
+        android:layout_width="321dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="28dp"
+        android:backgroundTint="@color/colorRedLight"
+        android:fontFamily="@font/harabara"
+        android:text=" Am I at risk?"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reportButton" />
+
+    <Button
+        android:id="@+id/reportButton"
+        android:layout_width="335dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="36dp"
+        android:backgroundTint="@color/colorRedLight"
+        android:fontFamily="@font/harabara"
+        android:text="Report diganosis"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

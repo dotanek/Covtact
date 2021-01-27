@@ -1,5 +1,6 @@
 package com.bigpharma.covtact.firebase;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
@@ -9,6 +10,8 @@ import androidx.annotation.Nullable;
 
 import com.bigpharma.covtact.LoginActivity;
 import com.bigpharma.covtact.RegisterActivity;
+import com.bigpharma.covtact.database.DatabaseHelper;
+import com.bigpharma.covtact.database.PathDatabaseHelper;
 import com.bigpharma.covtact.model.PathModel;
 import com.bigpharma.covtact.model.PathPointModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -238,6 +241,8 @@ public class FirestoreHelper {
         }
 
     }
+
+
 
     public PathModel getNextVirusPath() {
 
