@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.bigpharma.covtact.LoginActivity;
 import com.bigpharma.covtact.RegisterActivity;
+import com.bigpharma.covtact.ReportActivity;
 import com.bigpharma.covtact.database.DatabaseHelper;
 import com.bigpharma.covtact.database.PathDatabaseHelper;
 import com.bigpharma.covtact.model.PathModel;
@@ -239,7 +240,6 @@ public class FirestoreHelper {
         ) {
             PublishPathPoint(point);
         }
-
     }
 
 

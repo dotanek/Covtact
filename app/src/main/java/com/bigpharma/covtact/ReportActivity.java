@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.bigpharma.covtact.database.DatabaseHelper;
 import com.bigpharma.covtact.database.PathDatabaseHelper;
@@ -45,6 +46,7 @@ public class ReportActivity extends AppCompatActivity {
                 DatabaseHelper db = new DatabaseHelper(view.getContext());
                 PathDatabaseHelper pdb = db.getPathDatabaseHelper();
                 fdb.PublishPath(pdb.getPathPointByPath(pdb.getOwnedPathWithMaxId()));
+                Toast.makeText(ReportActivity.this,"Your paths were added to the database", Toast.LENGTH_LONG).show();
             }
         });
 
