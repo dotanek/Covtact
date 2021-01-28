@@ -76,8 +76,8 @@ public class LocationServiceListener implements LocationListener, LocationServic
     }
     public static boolean canRegisterPointAtTime(Date date, int lastDateHHMM) {
         int dateHHMM = Util.dateToHHMMInteger(date);
-        //if(dateHHMM % 5 != 0 || dateHHMM == lastDateHHMM) {
-        if(dateHHMM == lastDateHHMM) {
+        if(dateHHMM % 5 != 0 || dateHHMM == lastDateHHMM) {
+        //if(dateHHMM == lastDateHHMM) {
             return false;
         }
         return true;
