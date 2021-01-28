@@ -112,9 +112,13 @@ public class PathPointModel {
 
     public Map<String, Object> toMap() {
         Map<String, Object> docData = new HashMap<>();
+        docData.put("id", id);
+        docData.put("pathPointIndex", pathPointIndex);
+        docData.put("pathId", pathId);
         docData.put("date", date);
         docData.put("longtitude", longtitude);
         docData.put("latitude", latitude);
+
         return docData;
     }
 
