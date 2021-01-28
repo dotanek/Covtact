@@ -47,20 +47,12 @@ public class FirestoreHelper {
 
     public void intializeSnapshot() {
 
-
     }
-
-
-
 
     public List<List<PathPointModel>> getVirusPaths(){
         getThings();
         return allPaths;
     }
-
-
-
-
 
     public void getThings() {
 

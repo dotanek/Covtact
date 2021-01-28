@@ -9,7 +9,11 @@
     <color name="colorBlueDisabled">#839FA8</color>
     <color name="colorDisabledText">#C3C3C3</color>
     <color name="colorRedLight">#DE4141</color>
+    <color name="colorRedLighter">#FA5C5C</color>
+    <color name="colorRedDark">#942626</color>
     <color name="colorGreenBG">#CDF0A5</color>
     <color name="colorRedBG">#F69999</color>
     <color name="colorBlueBG">#CDF0A5</color>
+    <color name="colorGrayDark">#3C3C3C</color>
+    <color name="colorGrayDarker">#2E2E2E</color>
 </resources>

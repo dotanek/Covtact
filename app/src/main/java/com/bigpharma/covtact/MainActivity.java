@@ -5,20 +5,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.bigpharma.covtact.firebase.FirestoreHelper;
+import com.bigpharma.covtact.model.PathPointModel;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.security.Permission;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
@@ -29,10 +31,13 @@ public class MainActivity extends AppCompatActivity {
     private Button settingsButton;
     private Button mapButton;
     private Button reportButton;
+    private Button checkButton;
 
     //tmp
     private Button debug_logout;
+
     //ogniobaza
+    private FirestoreHelper fdb = new FirestoreHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
-        contactsButton = (Button) findViewById(R.id.contactsButton);
+        contactsButton = (Button) findViewById(R.id.confirmYesButton);
         contactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,14 +93,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*settingsButton = (Button) findViewById(R.id.settingsButton);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent settingsIntent = new Intent(view.getContext(),SettingsActivity.class);
-                view.getContext().startActivity(settingsIntent);
-            }
-        });*/
+        checkButton = (Button) findViewById(R.id.checkButton);
+        checkButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               Toast.makeText(MainActivity.this,"Fetching data from database.", Toast.LENGTH_LONG).show();
+
+               List<List<PathPointModel>> pathList = fdb.getVirusPaths(); // <-- TODO force waiting for the tasks to finish.
+
+               Toast.makeText(MainActivity.this,"Preparing data for check.", Toast.LENGTH_SHORT).show();
+               Log.wtf("test","Preparing data!");
+               for (List<PathPointModel> path : pathList) {
+                   Log.wtf("Path","==========================================");
+                   for (PathPointModel point : path) {
+                       Log.wtf("Point time",Integer.toString(point.getDateHHMM()));
+                   }
+               }
+               Toast.makeText(MainActivity.this,"Checking potential exposures.", Toast.LENGTH_SHORT).show();
+               Toast.makeText(MainActivity.this,"There were no exposures detected!", Toast.LENGTH_LONG).show();
+           }
+        });
 
         mapButton = (Button) findViewById(R.id.mapButton);
         mapButton.setOnClickListener(new View.OnClickListener() {
