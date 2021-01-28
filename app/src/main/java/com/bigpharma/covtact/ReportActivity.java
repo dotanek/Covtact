@@ -58,7 +58,7 @@ public class ReportActivity extends AppCompatActivity {
         });
 
         confirmNoButton = (Button) findViewById(R.id.confirmNoButton);
-        confirmYesButton.setOnClickListener(new View.OnClickListener() {
+        confirmNoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
