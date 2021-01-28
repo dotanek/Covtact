@@ -18,8 +18,11 @@ import com.bigpharma.covtact.model.PathPointModel;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
@@ -99,18 +102,34 @@ public class MainActivity extends AppCompatActivity {
            public void onClick(View view) {
                Toast.makeText(MainActivity.this,"Fetching data from database.", Toast.LENGTH_LONG).show();
 
-               List<List<PathPointModel>> pathList = fdb.getVirusPaths(); // <-- TODO force waiting for the tasks to finish.
-
-               Toast.makeText(MainActivity.this,"Preparing data for check.", Toast.LENGTH_SHORT).show();
-               Log.wtf("test","Preparing data!");
-               for (List<PathPointModel> path : pathList) {
-                   Log.wtf("Path","==========================================");
-                   for (PathPointModel point : path) {
-                       Log.wtf("Point time",Integer.toString(point.getDateHHMM()));
+               new Thread(new Runnable() {
+                   @Override
+                   public void run() {
+                       try {
+                           List<List<PathPointModel>> pathList = fdb.getThings();
+                           /*Toast.makeText(MainActivity.this,"Preparing data for check.", Toast.LENGTH_SHORT).show();*/
+                           Log.wtf("test","Preparing data!");
+                           for (List<PathPointModel> path : pathList) {
+                               Collections.sort(path, new Comparator<PathPointModel>() {
+                                   @Override
+                                   public int compare(PathPointModel p1, PathPointModel p2) {
+                                       return p1.getDateHHMM() - p2.getDateHHMM();
+                                   }
+                               });
+                               Log.wtf("Path","-----------------------------------------");
+                               for (PathPointModel point : path) {
+                                   Log.wtf("Point",Integer.toString(point.getDateHHMM()));
+                               }
+                           }
+                           /*.makeText(MainActivity.this,"Checking potential exposures.", Toast.LENGTH_SHORT).show();
+                           Toast.makeText(MainActivity.this,"There were no exposures detected!", Toast.LENGTH_LONG).show();*/
+                       } catch (ExecutionException e) {
+                           e.printStackTrace();
+                       } catch (InterruptedException e) {
+                           e.printStackTrace();
+                       }
                    }
-               }
-               Toast.makeText(MainActivity.this,"Checking potential exposures.", Toast.LENGTH_SHORT).show();
-               Toast.makeText(MainActivity.this,"There were no exposures detected!", Toast.LENGTH_LONG).show();
+               }).start();
            }
         });
 

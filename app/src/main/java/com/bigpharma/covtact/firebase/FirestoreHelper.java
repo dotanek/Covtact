@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -33,6 +34,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import static android.content.ContentValues.TAG;
 
@@ -49,52 +51,28 @@ public class FirestoreHelper {
 
     }
 
-    public List<List<PathPointModel>> getVirusPaths(){
+    /*public List<List<PathPointModel>> getVirusPaths() throws ExecutionException, InterruptedException {
         getThings();
         return allPaths;
+    }*/
+
+    public List<List<PathPointModel>> getThings() throws ExecutionException, InterruptedException {
+        List<List<PathPointModel>> pathList = new ArrayList<List<PathPointModel>>();
+
+        QuerySnapshot query = Tasks.await(fs.collection("VirusPaths").get());
+        for (QueryDocumentSnapshot document : query) {
+            List<PathPointModel> path = new ArrayList<PathPointModel>();
+            if ((!document.getData().toString().equals(FirebaseAuth.getInstance().getUid()))) {
+                QuerySnapshot subQuery = Tasks.await(document.getReference().collection("pathPoints").get());
+                for (DocumentSnapshot doc : subQuery) {
+                    path.add(doc.toObject(PathPointModel.class));
+                    Log.wtf(TAG, doc.getId() + " => " + doc.toObject(PathPointModel.class).toString());
+                }
+            }
+            pathList.add(path);
+        }
+        return pathList;
     }
-
-    public void getThings() {
-
-
-        fs.collection("VirusPaths")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                List<PathPointModel> path = new ArrayList<PathPointModel>();
-                                if ((!document.getData().toString().equals(FirebaseAuth.getInstance().getUid()))) {
-                                    document.getReference().collection("pathPoints").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                for (DocumentSnapshot doc : task.getResult()
-                                                ) {
-                                                    tmp.add(doc.toObject(PathPointModel.class));
-                                                    Log.d(TAG, doc.getId() + " => " + doc.toObject(PathPointModel.class).toString());
-                                                }
-                                            }
-                                        }
-                                    });
-                                }
-                                allPaths.add(tmp);
-                                tmp.clear();
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-
-    }
-
-
-
-
-
 
     /*
         fs.collection("VirusPaths")
